@@ -51,15 +51,15 @@
 }
 
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  margin: 0;
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  border-inline: none;
 }
 
 body {
@@ -108,4 +108,25 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+/* ── RESET pour l'admin ──────────────────────────────────── */
+.admin-root {
+  text-align: left !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.admin-root #root,
+.adm-app,
+.adm-body,
+.adm-main,
+.adm-sidebar,
+.adm-topbar {
+  text-align: left !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border-inline: none !important;
 }

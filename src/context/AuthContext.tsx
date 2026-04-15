@@ -1,25 +1,66 @@
 import { createContext, useContext, useState } from 'react';
-import type { AuthContextType, LoginFormData, User } from '../types/auth.types.ts';
+import { useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
+import type {
+  AuthContextType, LoginFormData,
+  LoginResponse, User, UserRole,
+} from '../types/auth.types';
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// ← rôles exacts du backend
+const ROLE_ROUTES: Record<UserRole, string> = {
+  ADMINISTRATEUR:      '/admin',
+  MEDECIN:             '/medecin/dashboard',
+  AGENT_ADMINISTRATIF: '/agent/dashboard',
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? (JSON.parse(saved) as User) : null;
+  });
+
+  const navigate = useNavigate();
 
   const login = async (data: LoginFormData) => {
-    // TODO: remplacer par ton appel API réel
-    console.log('Login avec :', data);
-    // Simulation temporaire
-    setUser({
-      id: '1',
-      email: data.email,
-      role: 'admin',
-      nom: 'ZANNOU',
-      prenom: 'Jean',
+    const res = await fetch('http://localhost:3000/api/auth/login', { // ← /api/auth/login
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: data.email,
+        motDePasse: data.password, // ← champ attendu par LoginDto
+      }),
     });
+
+    if (!res.ok) {
+      const err = await res.json() as { message: string };
+      throw new Error(err.message ?? 'Identifiants incorrects.');
+    }
+
+    const json = (await res.json()) as LoginResponse;
+
+    localStorage.setItem('accessToken', json.tokens.accessToken);
+
+    if (data.rememberMe) {
+      localStorage.setItem('refreshToken', json.tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(json.user));
+    } else {
+      sessionStorage.setItem('refreshToken', json.tokens.refreshToken);
+    }
+
+    setUser(json.user);
+    navigate(ROLE_ROUTES[json.user.role]);
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('refreshToken');
+    navigate('/login');
+  };
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
