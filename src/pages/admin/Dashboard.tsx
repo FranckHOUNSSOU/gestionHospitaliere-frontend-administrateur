@@ -124,8 +124,7 @@ export const Dashboard = () => {
                 <th>Utilisateur</th>
                 <th>Rôle</th>
                 <th>Statut</th>
-                <th>Dernière connexion</th>
-                <th>Actions</th>
+               
               </tr>
             </thead>
             <tbody>

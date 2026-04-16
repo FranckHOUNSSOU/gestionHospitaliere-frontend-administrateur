@@ -11,7 +11,6 @@
   padding: 0;
   font-family: 'Roboto', system-ui, sans-serif;
   font-size: 16px;
-  color: #2d3340 !important;
 }
 
 @media (min-width: 600px) {
@@ -28,10 +27,10 @@
   --c-surf3:     #ebedf0;
   --c-bdr:       #e0e2e8;
   --c-bdr2:      #c8cbd4;
-  --c-t0:        #0d1117;
-  --c-t1:        #2d3340;
-  --c-t2:        #6b7385;
-  --c-t3:        #9ea8bb;
+  --c-t0:        #000000;
+  --c-t1:        #1a1a2e;
+  --c-t2:        #444444;
+  --c-t3:        #666666;
   --c-accent:    #0ea5e9;
   --c-accent-bg: #e0f4fd;
   --c-accent-bd: #7dd3f8;
@@ -54,10 +53,10 @@
   --c-surf3:     #242d3a;
   --c-bdr:       #2d3748;
   --c-bdr2:      #4a5568;
-  --c-t0:        #e6edf3;
-  --c-t1:        #adbac7;
-  --c-t2:        #768390;
-  --c-t3:        #4d5566;
+  --c-t0:        #ffffff;
+  --c-t1:        #e6edf3;
+  --c-t2:        #b0bec5;
+  --c-t3:        #8b949e;
   --c-accent:    #388bfd;
   --c-accent-bg: #0d1f3c;
   --c-accent-bd: #1f4080;
@@ -80,7 +79,7 @@
   height: 100vh;
   overflow: hidden;
   background: var(--c-bg);
-  color: var(--c-t1);
+  color: var(--c-t0);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -119,26 +118,26 @@
 }
 
 .adm-logo-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--c-t0);
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--c-t0) !important;
   letter-spacing: -0.3px;
   line-height: 1;
 }
 
 .adm-logo-name em {
-  color: var(--c-accent);
+  color: var(--c-accent) !important;
   font-style: normal;
 }
 
 .adm-logo-chip {
   display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 9px !important;
+  font-weight: 700 !important;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   background: var(--c-accent-bg);
-  color: var(--c-accent);
+  color: var(--c-accent) !important;
   border: 1px solid var(--c-accent-bd);
   padding: 2px 6px;
   border-radius: 4px;
@@ -156,9 +155,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--c-green);
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--c-green) !important;
   background: var(--c-green-bg);
   border: 1px solid var(--c-green-bd);
   padding: 5px 12px;
@@ -190,14 +189,14 @@
   justify-content: center;
   cursor: pointer;
   position: relative;
-  color: var(--c-t2);
+  color: var(--c-t0) !important;
   transition: all 0.15s;
   flex-shrink: 0;
 }
 
 .adm-icon-btn:hover {
   background: var(--c-surf3);
-  color: var(--c-t0);
+  color: var(--c-t0) !important;
   border-color: var(--c-bdr2);
 }
 
@@ -237,24 +236,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
   font-family: 'JetBrains Mono', monospace;
   flex-shrink: 0;
 }
 
 .adm-user-name {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--c-t0);
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: var(--c-t0) !important;
   line-height: 1.3;
   white-space: nowrap;
 }
 
 .adm-user-role {
-  font-size: 10.5px;
-  color: var(--c-t2);
+  font-size: 10.5px !important;
+  color: var(--c-t2) !important;
   line-height: 1.3;
   white-space: nowrap;
 }
@@ -285,9 +284,9 @@
 
 .adm-nav-sec {
   padding: 16px 16px 5px;
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--c-t3);
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  color: var(--c-t3) !important;
   text-transform: uppercase;
   letter-spacing: 1px;
   line-height: 1;
@@ -302,7 +301,7 @@
   border-radius: 8px !important;
   font-size: 12.5px !important;
   font-weight: 400 !important;
-  color: var(--c-t2) !important;
+  color: var(--c-t1) !important;
   text-decoration: none !important;
   transition: all 0.15s !important;
   border: 1px solid transparent !important;
@@ -324,17 +323,17 @@
 
 .adm-nav-badge {
   margin-left: auto;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 10px !important;
+  font-weight: 600 !important;
   padding: 1px 7px;
   border-radius: 10px;
   font-family: 'JetBrains Mono', monospace;
   line-height: 1.6;
 }
 
-.adm-nb-red   { background: var(--c-red-bg);    color: var(--c-red);    }
-.adm-nb-blue  { background: var(--c-accent-bg); color: var(--c-accent); }
-.adm-nb-green { background: var(--c-green-bg);  color: var(--c-green);  }
+.adm-nb-red   { background: var(--c-red-bg);    color: var(--c-red) !important;    }
+.adm-nb-blue  { background: var(--c-accent-bg); color: var(--c-accent) !important; }
+.adm-nb-green { background: var(--c-green-bg);  color: var(--c-green) !important;  }
 
 .adm-sidebar-foot {
   margin-top: auto;
@@ -353,18 +352,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 11px !important;
   line-height: 1.4;
   margin-bottom: 4px;
 }
 
 .adm-sys-row:last-child { margin-bottom: 0; }
-.adm-sys-k { color: var(--c-t2); }
+.adm-sys-k { color: var(--c-t2) !important; }
 .adm-sys-v {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--c-green);
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--c-green) !important;
 }
 
 .adm-sys-track {
@@ -407,7 +406,7 @@
 
 .adm-page-sub {
   font-size: 11.5px !important;
-  color: var(--c-t3) !important;
+  color: var(--c-t2) !important;
   margin-top: 3px !important;
   font-family: 'JetBrains Mono', monospace !important;
   line-height: 1.4 !important;
@@ -446,15 +445,35 @@
   border-radius: 0;
 }
 
-.adm-kpi-blue::before  { background: var(--c-accent); }
-.adm-kpi-green::before { background: var(--c-green);  }
-.adm-kpi-amber::before { background: var(--c-amber);  }
-.adm-kpi-red::before   { background: var(--c-red);    }
+/* Couleurs KPI — s'adaptent au thème via les variables */
+.adm-kpi-blue {
+  background: var(--c-accent-bg) !important;
+  border-color: var(--c-accent-bd) !important;
+}
+.adm-kpi-blue::before { background: var(--c-accent) !important; }
+
+.adm-kpi-green {
+  background: var(--c-green-bg) !important;
+  border-color: var(--c-green-bd) !important;
+}
+.adm-kpi-green::before { background: var(--c-green) !important; }
+
+.adm-kpi-amber {
+  background: var(--c-red-bg) !important;
+  border-color: var(--c-red) !important;
+}
+.adm-kpi-amber::before { background: var(--c-red) !important; }
+
+.adm-kpi-red {
+  background: var(--c-amber-bg) !important;
+  border-color: var(--c-amber) !important;
+}
+.adm-kpi-red::before { background: var(--c-amber) !important; }
 
 .adm-kpi-lbl {
   font-size: 10px !important;
   font-weight: 700 !important;
-  color: var(--c-t3) !important;
+  color: var(--c-t2) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.7px !important;
   margin-bottom: 10px !important;
@@ -478,7 +497,7 @@
 
 .adm-note-up      { color: var(--c-green) !important; }
 .adm-note-down    { color: var(--c-red) !important;   }
-.adm-note-neutral { color: var(--c-t3) !important;    }
+.adm-note-neutral { color: var(--c-t2) !important;    }
 
 /* ═══════════════════════════════════════════════════════════
    CONTENT GRID
@@ -519,7 +538,7 @@
 
 .adm-card-sub {
   font-size: 11px !important;
-  color: var(--c-t3) !important;
+  color: var(--c-t2) !important;
   margin: 2px 0 0 !important;
   line-height: 1 !important;
 }
@@ -540,11 +559,11 @@
   border-radius: 7px !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
   cursor: pointer !important;
   border: 1px solid var(--c-bdr) !important;
   background: var(--c-surf2) !important;
-  color: var(--c-t1) !important;
+  color: var(--c-t0) !important;
   white-space: nowrap !important;
   transition: all 0.15s !important;
   text-decoration: none !important;
@@ -558,7 +577,7 @@
 
 .adm-btn-primary {
   background: var(--c-accent) !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-color: var(--c-accent) !important;
 }
 
@@ -576,10 +595,10 @@
 }
 
 .adm-table thead th {
-  padding: 9px 14px !important;
+  padding: 7px 12px !important;
   font-size: 9.5px !important;
   font-weight: 700 !important;
-  color: var(--c-t3) !important;
+  color: var(--c-t2) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.8px !important;
   text-align: left !important;
@@ -615,7 +634,7 @@
 .adm-cell-mono {
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 10.5px !important;
-  color: var(--c-t3) !important;
+  color: var(--c-t2) !important;
   margin-top: 2px !important;
   line-height: 1.3 !important;
 }
@@ -663,8 +682,8 @@
   cursor: pointer !important;
   border: 1px solid var(--c-bdr) !important;
   background: var(--c-surf2) !important;
-  color: var(--c-t2) !important;
-  font-family: 'Inter', sans-serif !important;
+  color: var(--c-t0) !important;
+  font-family: 'Roboto', sans-serif !important;
   transition: all 0.15s !important;
   white-space: nowrap !important;
   height: 26px !important;

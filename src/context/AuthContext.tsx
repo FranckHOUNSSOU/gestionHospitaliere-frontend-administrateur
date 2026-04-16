@@ -1,9 +1,9 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import type {
   AuthContextType, LoginFormData,
-  LoginResponse, User, UserRole,
+  LoginResponse, User, UserRole, 
 } from '../types/auth.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const navigate = useNavigate();
-
+//---Login
   const login = async (data: LoginFormData) => {
     const res = await fetch('http://localhost:3000/api/auth/login', { // ← /api/auth/login
       method: 'POST',
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(json.user);
     navigate(ROLE_ROUTES[json.user.role]);
   };
-
+//---Logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem('accessToken');
@@ -73,4 +73,6 @@ export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth doit être utilisé dans AuthProvider');
   return ctx;
+
+
 };
