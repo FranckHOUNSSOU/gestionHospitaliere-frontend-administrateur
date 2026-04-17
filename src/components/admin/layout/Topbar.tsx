@@ -1,7 +1,10 @@
 import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../context/AuthContext';
 
-export const Topbar = () => {
+export const Topbar = ({ minimized, onToggleSidebar }: {
+  minimized: boolean;
+  onToggleSidebar: () => void;
+}) => {
   const { dark, toggle } = useTheme();
   const { user, logout } = useAuth();
 
@@ -12,6 +15,7 @@ export const Topbar = () => {
 
   return (
     <div className="adm-topbar">
+      <div className="adm-topbar-l">
       <div className="adm-logo">
         <div className="adm-logo-icon">
           <svg width="18" height="18" viewBox="0 0 24 24"
@@ -22,7 +26,25 @@ export const Topbar = () => {
         </div>
         <span className="adm-logo-name">
           Hôpital<em>GH</em>
+
         </span>
+      </div>
+
+      <button
+        className="adm-topbar-sidebar-toggle"
+        onClick={onToggleSidebar}
+        title={minimized ? 'Agrandir le menu' : 'Réduire le menu'}
+      >
+        {minimized ? (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        ) : (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        )}
+      </button>
       </div>
 
       <div className="adm-topbar-r">

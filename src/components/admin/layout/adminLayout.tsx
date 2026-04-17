@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
@@ -7,15 +8,19 @@ import '../../../pages/admin/Dashboard.css';
 
 export const AdminLayout = () => {
   const { dark } = useTheme();
+  const [minimized, setMinimized] = useState(false);
+
   return (
     <div className="adm" data-theme={dark ? 'dark' : ''}>
       <div className="adm-wrap">
-        <Topbar />
+        <Topbar minimized={minimized} onToggleSidebar={() => setMinimized(m => !m)} />
         <div className="adm-body">
-          <Sidebar />
-          <Outlet />
+          <Sidebar minimized={minimized} />
+          <div className="adm-content-col">
+            <Outlet />
+            <Footer />
+          </div>
         </div>
-        <Footer />
       </div>
     </div>
   );

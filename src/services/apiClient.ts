@@ -3,8 +3,8 @@
 // et l'injection du header Authorization sur toutes les requêtes.
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
-const ACCESS_TOKEN_KEY = 'hopital_access_token';
-const REFRESH_TOKEN_KEY = 'hopital_refresh_token';
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 
 // ── Helpers tokens ─────────────────────────────────────────────────────────
 
@@ -13,7 +13,8 @@ function getAccessToken(): string | null {
 }
 
 function getRefreshToken(): string | null {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
+  return localStorage.getItem(REFRESH_TOKEN_KEY)
+      ?? sessionStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
 function saveTokens(accessToken: string, refreshToken: string) {
