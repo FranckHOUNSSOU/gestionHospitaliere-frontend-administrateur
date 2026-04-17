@@ -22,7 +22,7 @@ export const Topbar = () => {
         </div>
         <span className="adm-logo-name">
           Hôpital<em>GH</em>
-          <span className="adm-logo-chip">Admin</span>
+          
         </span>
       </div>
 

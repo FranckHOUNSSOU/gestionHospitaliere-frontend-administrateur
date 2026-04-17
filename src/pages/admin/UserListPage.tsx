@@ -213,7 +213,7 @@ export function UserListPage() {
           onClick={() => setShowModal(true)}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 18px', borderRadius: 10, border: 'none', margin : 15,
+            padding: '10px 18px', borderRadius: 10, border: 'none', margin: 45, marginLeft: 0,
             background: '#4f46e5', color: '#fff',
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             fontFamily: 'inherit',

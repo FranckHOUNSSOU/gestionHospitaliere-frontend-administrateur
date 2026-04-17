@@ -40,7 +40,7 @@ export const Sidebar = () => (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>
-    } label="Comptes utilisateurs" count="12" countCls="adm-nb-blue" />
+    } label="Comptes utilisateurs" count="" countCls="adm-nb-blue" />
     <Item to="/admin/roles" icon={
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
         <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -53,7 +53,7 @@ export const Sidebar = () => (
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
       </svg>
-    } label="Journaux d'activité" count="3" countCls="adm-nb-red" />
+    } label="Journaux d'activité" count="" countCls="adm-nb-red" />
     <Item to="/admin/security" icon={
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -85,24 +85,6 @@ export const Sidebar = () => (
       </svg>
     } label="Rapports & statistiques" />
 
-    <div className="adm-sidebar-foot">
-      <div className="adm-sys-box">
-        <div className="adm-sys-row">
-          <span className="adm-sys-k">Serveur</span>
-          <span className="adm-sys-v">EN LIGNE</span>
-        </div>
-        <div className="adm-sys-track">
-          <div className="adm-sys-fill" style={{ width: '68%' }} />
-        </div>
-        <div className="adm-sys-row">
-          <span className="adm-sys-k">Charge CPU</span>
-          <span className="adm-sys-v">68%</span>
-        </div>
-        <div className="adm-sys-row">
-          <span className="adm-sys-k">Sauvegarde</span>
-          <span className="adm-sys-v">02:00</span>
-        </div>
-      </div>
-    </div>
+    
   </div>
 );

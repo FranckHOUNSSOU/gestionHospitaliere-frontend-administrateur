@@ -259,7 +259,7 @@ export default function LoginPage() {
                     </svg>
                     <Form.Control
                       type="email"
-                      placeholder="exemple@hopital.bj"
+                      placeholder="Votre email professionnel"
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
                       className="login-input"
@@ -281,7 +281,7 @@ export default function LoginPage() {
                     </svg>
                     <Form.Control
                       type="password"
-                      placeholder="••••••••••"
+                      placeholder="Votre mot de passe"
                       value={formData.password}
                       onChange={e => setFormData({ ...formData, password: e.target.value })}
                       className="login-input"
@@ -325,7 +325,7 @@ export default function LoginPage() {
 
             {/* Copyright */}
             <p className="login-copy">
-              &copy; 2025 HôpitalGH &nbsp;&middot;&nbsp; Tous droits réservés
+              &copy; 2026 HôpitalGH &nbsp;&middot;&nbsp; Tous droits réservés
             </p>
           </Col>
 
