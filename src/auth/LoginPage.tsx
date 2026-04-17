@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import type { SyntheticEvent } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import type { LoginFormData } from '../../types/auth.types';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import type { LoginFormData } from '../types/auth.types';
 import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../../auth/LoginPage.css';
+import './LoginPage.css';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -27,6 +29,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(formData);
+      navigate('/dashboard');
     } catch {
       setError('Identifiants incorrects. Veuillez réessayer.');
     } finally {
