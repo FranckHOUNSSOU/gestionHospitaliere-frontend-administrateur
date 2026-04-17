@@ -145,6 +145,33 @@
   vertical-align: middle;
 }
 
+.adm-topbar-l {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.adm-topbar-sidebar-toggle {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--c-bdr);
+  background: var(--c-surf2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--c-t2);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.adm-topbar-sidebar-toggle:hover {
+  background: var(--c-surf3);
+  color: var(--c-t0);
+  border-color: var(--c-bdr2);
+}
+
 .adm-topbar-r {
   display: flex;
   align-items: center;
@@ -284,35 +311,6 @@
   overflow-x: hidden;
 }
 
-/* ── Sidebar toggle button ─────────────────────────────────── */
-.adm-sidebar-toggle-wrap {
-  display: flex;
-  justify-content: flex-end;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--c-bdr);
-  flex-shrink: 0;
-}
-
-.adm-sidebar-toggle {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  border: 1px solid var(--c-bdr);
-  background: var(--c-surf2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--c-t2);
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-
-.adm-sidebar-toggle:hover {
-  background: var(--c-surf3);
-  color: var(--c-t0);
-  border-color: var(--c-bdr2);
-}
 
 /* ── Nav icon/label wrapper ────────────────────────────────── */
 .adm-nav-icon {
@@ -353,11 +351,6 @@
 
 .adm-sidebar--min .adm-sidebar-foot {
   display: none;
-}
-
-.adm-sidebar--min .adm-sidebar-toggle-wrap {
-  justify-content: center;
-  padding: 8px 6px;
 }
 
 .adm-nav-sec {
@@ -456,6 +449,17 @@
   background: var(--c-accent);
   border-radius: 2px;
   transition: width 0.3s;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTENT COLUMN (outlet + footer)
+   ═══════════════════════════════════════════════════════════ */
+.adm-content-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════

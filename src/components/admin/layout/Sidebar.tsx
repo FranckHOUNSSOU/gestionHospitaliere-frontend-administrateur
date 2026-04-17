@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
 
 const Item = ({ to, icon, label, count, countCls, minimized }: {
   to: string; icon: ReactNode; label: string;
@@ -18,30 +17,9 @@ const Item = ({ to, icon, label, count, countCls, minimized }: {
   </NavLink>
 );
 
-export const Sidebar = () => {
-  const [minimized, setMinimized] = useState(false);
-
+export const Sidebar = ({ minimized }: { minimized: boolean }) => {
   return (
     <div className={`adm-sidebar${minimized ? ' adm-sidebar--min' : ''}`}>
-
-      {/* Toggle button */}
-      <div className="adm-sidebar-toggle-wrap">
-        <button
-          className="adm-sidebar-toggle"
-          onClick={() => setMinimized(m => !m)}
-          title={minimized ? 'Agrandir le menu' : 'Réduire le menu'}
-        >
-          {minimized ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-          )}
-        </button>
-      </div>
 
       <div className="adm-nav-sec">Tableau de bord</div>
       <Item to="/admin" minimized={minimized} icon={
