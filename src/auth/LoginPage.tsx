@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import type { SyntheticEvent } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import type { LoginFormData } from '../../types/auth.types';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import type { LoginFormData } from '../types/auth.types';
 import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../../auth/LoginPage.css';
+import './LoginPage.css';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -27,6 +29,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(formData);
+      navigate('/dashboard');
     } catch {
       setError('Identifiants incorrects. Veuillez réessayer.');
     } finally {
@@ -257,7 +260,7 @@ export default function LoginPage() {
                     </svg>
                     <Form.Control
                       type="email"
-                      placeholder="Votre email professionnel"
+                      placeholder="exemple@hopital.bj"
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
                       className="login-input"
@@ -279,7 +282,7 @@ export default function LoginPage() {
                     </svg>
                     <Form.Control
                       type="password"
-                      placeholder="Votre mot de passe"
+                      placeholder="••••••••••"
                       value={formData.password}
                       onChange={e => setFormData({ ...formData, password: e.target.value })}
                       className="login-input"
@@ -323,7 +326,7 @@ export default function LoginPage() {
 
             {/* Copyright */}
             <p className="login-copy">
-              &copy; 2026 HôpitalGH &nbsp;&middot;&nbsp; Tous droits réservés
+              &copy; 2025 HôpitalGH &nbsp;&middot;&nbsp; Tous droits réservés
             </p>
           </Col>
 

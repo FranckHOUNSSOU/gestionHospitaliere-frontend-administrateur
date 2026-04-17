@@ -124,11 +124,12 @@ export const Dashboard = () => {
                 <th>Utilisateur</th>
                 <th>Rôle</th>
                 <th>Statut</th>
-               
+                <th>Dernière connexion</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {users?.map((u: AdminUser) => (
+              {(users ?? []).map((u: AdminUser) => (
                 <tr key={u.id}>
                   <td>
                     <p className="adm-cell-name">{u.name}</p>
@@ -149,15 +150,20 @@ export const Dashboard = () => {
                     <div className="adm-act-row">
                       <span className="adm-act">Modifier</span>
                       {u.status === 'active'
-                        ? <span className="adm-act adm-act-danger"
-                            onClick={() => blockUser.mutate(u.id)}>Bloquer</span>
-                        : <span className="adm-act"
-                            onClick={() => activateUser.mutate(u.id)}>Activer</span>
+                        ? <span className="adm-act adm-act-danger" onClick={() => blockUser.mutate(u.id)}>Bloquer</span>
+                        : <span className="adm-act" onClick={() => activateUser.mutate(u.id)}>Activer</span>
                       }
                     </div>
                   </td>
                 </tr>
               ))}
+              {(users ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px', color: 'var(--c-t3)' }}>
+                    Aucun utilisateur
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
