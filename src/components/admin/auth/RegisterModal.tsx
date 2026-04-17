@@ -46,17 +46,44 @@ const SERVICES = [
   { value: 'Administration', label: 'Administration système' },
 ];
 
+const VALID_ROLES = ['MEDECIN', 'AGENT_ADMINISTRATIF'] as const;
+type ValidRole = typeof VALID_ROLES[number];
+
 const initialForm = {
   nom: '',
   prenom: '',
   email: '',
   telephone: '',
-  role: '' as '' | 'MEDECIN' | 'AGENT_ADMINISTRATIF',
+  role: '' as '' | ValidRole,
   service: '',
   numeroOrdre: '',
   motDePasse: '',
   confirmMotDePasse: '',
 };
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function isValidRole(value: string): value is ValidRole {
+  return (VALID_ROLES as readonly string[]).includes(value);
+}
+
+/**
+ * Traduit les messages d'erreur bruts du backend en messages lisibles.
+ * On cible les cas métier connus ; les autres passent tels quels.
+ */
+function traduireErreur(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes('email') && (m.includes('exist') || m.includes('déjà') || m.includes('conflit') || m.includes('unique'))) {
+    return 'Cette adresse email est déjà utilisée par un autre compte.';
+  }
+  if (m.includes('forbidden') || m.includes('403') || m.includes('rôle insuffisant') || m.includes('administrateur')) {
+    return 'Vous n\'avez pas les droits nécessaires pour créer un compte.';
+  }
+  if (m.includes('session expirée') || m.includes('reconnect')) {
+    return 'Votre session a expiré. Veuillez vous reconnecter.';
+  }
+  return message;
+}
 
 // ── Composant ──────────────────────────────────────────────────────────────
 
@@ -65,7 +92,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // ── État du toast ──────────────────────────────────────────────────────
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -87,10 +113,13 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
       setError('Nom, prénom et email sont obligatoires.');
       return;
     }
-    if (!form.role) {
+
+    // Vérifie que le rôle est bien une valeur acceptée (pas la chaîne vide)
+    if (!isValidRole(form.role)) {
       setError('Veuillez sélectionner un rôle.');
       return;
     }
+
     if (!form.motDePasse) {
       setError('Le mot de passe est obligatoire.');
       return;
@@ -104,33 +133,33 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
       return;
     }
 
-    // ── Appel API ───────────────────────────────────────────────────────
+    // ── Construction du body (rôle garanti valide ici) ──────────────────
     const body: CreateUserDto = {
       nom: form.nom.trim(),
       prenom: form.prenom.trim(),
       email: form.email.trim(),
       motDePasse: form.motDePasse,
-      role: form.role as 'MEDECIN' | 'AGENT_ADMINISTRATIF',
-      ...(form.telephone && { telephone: form.telephone.trim() }),
-      ...(form.service && { service: form.service }),
+      role: form.role,                           // TypeScript sait que c'est ValidRole
+      ...(form.telephone  && { telephone:   form.telephone.trim() }),
+      ...(form.service    && { service:     form.service }),
       ...(form.numeroOrdre && { numeroOrdre: form.numeroOrdre.trim() }),
     };
 
+    // ── Appel API ───────────────────────────────────────────────────────
     setLoading(true);
     try {
       await apiClient.post('/auth/users', body);
 
-      // ── Succès : capturer les noms AVANT handleClose (qui remet le form à zéro) ──
       const nomComplet = `${form.prenom.trim()} ${form.nom.trim()}`;
-
       handleClose();
 
       setToastMessage(`Compte de ${nomComplet} créé. Pensez à l'activer.`);
       setToastVisible(true);
 
       onSuccess?.();
-    } catch (err: any) {
-      setError(err.message ?? 'Une erreur est survenue. Veuillez réessayer.');
+    } catch (err: unknown) {
+      const raw = err instanceof Error ? err.message : 'Une erreur est survenue. Veuillez réessayer.';
+      setError(traduireErreur(raw));
     } finally {
       setLoading(false);
     }
@@ -138,7 +167,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
 
   return (
     <>
-      {/* ── TOAST — rendu en dehors du modal pour qu'il soit toujours visible ── */}
       <ToastNotification
         show={toastVisible}
         message={toastMessage}
@@ -147,7 +175,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
         duration={4500}
       />
 
-      {/* ── MODAL ── */}
       <Modal
         show={show}
         onHide={handleClose}
@@ -176,7 +203,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
               </Alert>
             )}
 
-            {/* SECTION : Informations personnelles */}
             <div className="register-modal__section-label">Informations personnelles</div>
 
             <Row className="g-3 mb-3">
@@ -240,7 +266,7 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
               <Col xs={12} sm={6}>
                 <Form.Group controlId="regTel">
                   <Form.Label className="register-modal__label">
-                    Téléphone <span className="register-modal__optional">(optionnel)</span>
+                    Téléphone <span className="register-modal__optional"></span>
                   </Form.Label>
                   <div className="register-modal__input-wrap">
                     <svg className="register-modal__input-icon" width="16" height="16"
@@ -248,7 +274,7 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                     </svg>
                     <Form.Control
-                      type="tel" placeholder="+229 97 XX XX XX"
+                      type="tel" placeholder="+229 01 XX XX XX XX"
                       value={form.telephone}
                       onChange={e => set('telephone', e.target.value)}
                       className="register-modal__input"
@@ -258,7 +284,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
               </Col>
             </Row>
 
-            {/* SECTION : Rôle et service */}
             <div className="register-modal__section-label">Rôle et service</div>
 
             <Row className="g-3 mb-3">
@@ -320,7 +345,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
               </Col>
             </Row>
 
-            {/* SECTION : Sécurité */}
             <div className="register-modal__section-label">Sécurité du compte</div>
 
             <Row className="g-3 mb-4">
@@ -362,7 +386,6 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
               </Col>
             </Row>
 
-            {/* Boutons */}
             <div className="register-modal__footer">
               <Button
                 variant="outline-secondary"
