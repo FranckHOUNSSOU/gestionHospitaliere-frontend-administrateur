@@ -11,7 +11,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // ← rôles exacts du backend
 const ROLE_ROUTES: Record<UserRole, string> = {
   ADMINISTRATEUR:      '/admin',
-  MEDECIN:             '/medecin/dashboard',
+  MEDECIN:             '/medecin',
   AGENT_ADMINISTRATIF: '/agent',
 };
 

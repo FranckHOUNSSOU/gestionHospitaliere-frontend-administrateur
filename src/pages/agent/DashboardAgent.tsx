@@ -15,7 +15,7 @@ import Badge, { statusBadge } from '../../components/agent/ui/Badge';
 import { patients, appointments, admissions, invoices } from '../../data/mockData';
 import { useNavigation } from '../../context/NavigationContext';
 
-export default function Dashboard() {
+export default function DashboardAgent() {
   const { navigate } = useNavigation();
 
   const today = '2026-04-17';
