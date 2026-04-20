@@ -130,3 +130,5 @@ code {
   margin: 0 !important;
   border-inline: none !important;
 }
+
+@import "tailwindcss";

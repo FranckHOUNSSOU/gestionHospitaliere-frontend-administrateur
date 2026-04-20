@@ -66,7 +66,7 @@ export const Topbar = () => {
           <div className="adm-avatar">{initiales}</div>
           <div>
             <div className="adm-user-name">{nomComplet}</div>
-            <div className="adm-user-role">Agent Administratif</div>
+            <div className="adm-user-role">Agent Admnistratif</div>
           </div>
         </div>
 

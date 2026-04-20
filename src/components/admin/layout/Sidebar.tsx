@@ -24,14 +24,14 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
     <div className={`adm-sidebar${minimized ? ' adm-sidebar--min' : ''}`}>
 
       <div className="adm-nav-sec">Tableau de bord</div>
-      <Item to="/admin" minimized={minimized}  icon={
+      <Item to="/admin/Dashboard" minimized={minimized}  icon={
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
           <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
         </svg>
       } label="Vue d'ensemble" fontSize={13}/>
 
-      <div className="adm-nav-sec">Utilisateurs</div>
+      <div className="adm-nav-sec">Patients</div>
         <div style={{fontSize:14}}>
           <Item to="/admin/users" minimized={minimized} icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
