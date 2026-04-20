@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ArrowLeft, Save, CalendarDays, Clock } from 'lucide-react';
 import { useNavigation } from '../../../context/NavigationContext';
-import { patients, doctors, departments } from '../../../data/mockData';
+import { patients, departments } from '../../../data/mockData';
+import { useDoctors } from '../../../context/DoctorContext';
 
 const timeSlots = [
   '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
@@ -12,6 +13,7 @@ const appointmentTypes = ['Consultation', 'Suivi', 'Contrôle', 'Examen', 'Pré-
 
 export default function AppointmentForm() {
   const { navigate } = useNavigation();
+  const { doctors } = useDoctors();
   const [form, setForm] = useState({
     patientId: '',
     doctorId: '',
@@ -73,7 +75,7 @@ export default function AppointmentForm() {
                 <select
                   value={form.patientId}
                   onChange={(e) => handleChange('patientId', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un patient</option>
                   {patients.map((p) => (
@@ -86,7 +88,7 @@ export default function AppointmentForm() {
                 <select
                   value={form.department}
                   onChange={(e) => handleChange('department', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un service</option>
                   {departments.map((d) => (
@@ -99,7 +101,7 @@ export default function AppointmentForm() {
                 <select
                   value={form.doctorId}
                   onChange={(e) => handleChange('doctorId', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un médecin</option>
                   {filteredDoctors.map((d) => (
@@ -122,7 +124,7 @@ export default function AppointmentForm() {
                   type="date"
                   value={form.date}
                   onChange={(e) => handleChange('date', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 />
               </div>
               <div>
@@ -130,7 +132,7 @@ export default function AppointmentForm() {
                 <select
                   value={form.duration}
                   onChange={(e) => handleChange('duration', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="15">15 min</option>
                   <option value="30">30 min</option>
@@ -169,7 +171,7 @@ export default function AppointmentForm() {
                 <select
                   value={form.type}
                   onChange={(e) => handleChange('type', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   {appointmentTypes.map((t) => <option key={t}>{t}</option>)}
                 </select>
@@ -180,7 +182,7 @@ export default function AppointmentForm() {
                   value={form.notes}
                   onChange={(e) => handleChange('notes', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none"
+                  className="adm-input"
                   placeholder="Motif de consultation, symptômes..."
                 />
               </div>

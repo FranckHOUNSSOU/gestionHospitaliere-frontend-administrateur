@@ -9,8 +9,8 @@ import { PrivateRoute } from './routes/PrivateRoute';
 import LoginPage from './pages/auth/LoginPage';
 import { AdminLayout } from './components/admin/layout/adminLayout';
 import { Dashboard } from './pages/admin/Dashboard';
-import DashboardAgent from './pages/agent/DashboardAgent';                
-import { NavigationProvider } from './context/NavigationContext';         
+import DashboardAgent from './pages/agent/DashboardAgent';
+import { NavigationProvider } from './context/NavigationContext';
 import { AgentLayout } from './components/agent/layout/agentLayout';
 import AppointmentForm from './pages/agent/appointments/AppointmentForm';
 import AppointmentList from './pages/agent/appointments/AppointmentList';
@@ -23,7 +23,6 @@ import PatientForm from './pages/agent/patients/PatientForm';
 import PatientList from './pages/agent/patients/PatientList';
 
 const UserListPage = lazy(() => import('./pages/admin/users'));
-//const PatientList  = lazy(() => import('./pages/agent/patients/PatientList'));
 
 function App() {
   return (
@@ -32,9 +31,7 @@ function App() {
         <ThemeProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/users"  element={<UserListPage />} />
-          
-           
+            <Route path="/users" element={<UserListPage />} />
 
             {/* ADMINISTRATEUR */}
             <Route
@@ -58,29 +55,34 @@ function App() {
               path="/agent"
               element={
                 <PrivateRoute requiredRole="AGENT_ADMINISTRATIF">
-                  <NavigationProvider>          {/* ← enveloppe le layout agent */}
+                  <NavigationProvider>
                     <AgentLayout />
                   </NavigationProvider>
                 </PrivateRoute>
               }
             >
-            <Route path="/agent/patients/PatientList" element={<PatientList />} />
-            <Route path="/agent/patients/PatientForm" element={<PatientForm />} />
-            <Route path="/agent/admissions/AdmissionList" element={<AdmissionList />} />
-            <Route path="/agent/admissions/AdmissionForm" element={<AdmissionForm />} />
-            <Route path="/agent/appointments/AppointmentList" element={<AppointmentList />} />
-            <Route path="/agent/appointments/AppointmentForm" element={<AppointmentForm />} />
-            <Route path="/agent/billing/InvoiceForm" element={<InvoiceForm />} />
-            <Route path="/agent/billing/InvoiceList" element={<InvoiceList />} />
-            <Route path="/agent/report/Reports" element={<Reports />} />
+              {/* Dashboard — /agent et /agent/DashboardAgent */}
+              <Route index element={<DashboardAgent />} />
+              <Route path="DashboardAgent" element={<DashboardAgent />} />
 
+              {/* Patients */}
+              <Route path="patients/PatientList" element={<PatientList />} />
+              <Route path="patients/PatientForm" element={<PatientForm />} />
 
-              <Route index element={<DashboardAgent />} />   {/* ← dashboard agent */}
-              <Route path="patients" element={
-                <Suspense fallback={<div>Chargement…</div>}>
-                  
-                </Suspense>
-              } />
+              {/* Admissions */}
+              <Route path="admissions/AdmissionList" element={<AdmissionList />} />
+              <Route path="admissions/AdmissionForm" element={<AdmissionForm />} />
+
+              {/* Rendez-vous */}
+              <Route path="appointments/AppointmentList" element={<AppointmentList />} />
+              <Route path="appointments/AppointmentForm" element={<AppointmentForm />} />
+
+              {/* Facturation */}
+              <Route path="billing/InvoiceList" element={<InvoiceList />} />
+              <Route path="billing/InvoiceForm" element={<InvoiceForm />} />
+
+              {/* Rapports */}
+              <Route path="reports/Reports" element={<Reports />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />

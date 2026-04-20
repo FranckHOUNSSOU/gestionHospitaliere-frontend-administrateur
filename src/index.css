@@ -1,3 +1,4 @@
+@import "tailwindcss";
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -131,4 +132,42 @@ code {
   border-inline: none !important;
 }
 
-@import "tailwindcss";
+.adm-input {
+  @apply w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 transition-all duration-200;
+}
+
+.adm-input:focus {
+  @apply bg-white border-blue-500 ring-2 ring-blue-500/20 outline-none;
+}
+
+.adm-input::placeholder {
+  @apply text-slate-400;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200;
+}
+
+/* bouton principal */
+.btn-primary {
+  @apply bg-blue-600 text-white shadow-sm;
+}
+.btn-primary:hover {
+  @apply bg-blue-700 shadow-md -translate-y-[1px];
+}
+
+/* bouton secondaire */
+.btn-secondary {
+  @apply border border-slate-200 text-slate-700 bg-white;
+}
+.btn-secondary:hover {
+  @apply bg-slate-50 shadow-sm;
+}
+
+/* bouton ghost (icone) */
+.btn-ghost {
+  @apply p-2 rounded-lg text-slate-400;
+}
+.btn-ghost:hover {
+  @apply bg-slate-100 text-blue-600;
+}

@@ -80,7 +80,7 @@ export default function PatientForm() {
                   type="text"
                   value={form.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Prénom du patient"
                 />
               </div>
@@ -90,7 +90,7 @@ export default function PatientForm() {
                   type="text"
                   value={form.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Nom de famille"
                 />
               </div>
@@ -100,7 +100,7 @@ export default function PatientForm() {
                   type="date"
                   value={form.dateOfBirth}
                   onChange={(e) => handleChange('dateOfBirth', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 />
               </div>
               <div>
@@ -108,24 +108,13 @@ export default function PatientForm() {
                 <select
                   value={form.gender}
                   onChange={(e) => handleChange('gender', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="M">Masculin</option>
                   <option value="F">Féminin</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Groupe sanguin</label>
-                <select
-                  value={form.bloodType}
-                  onChange={(e) => handleChange('bloodType', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                >
-                  {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((b) => (
-                    <option key={b}>{b}</option>
-                  ))}
-                </select>
-              </div>
+              
             </div>
           </div>
 
@@ -143,8 +132,8 @@ export default function PatientForm() {
                   type="tel"
                   value={form.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  placeholder="+224 6XX XX XX XX"
+                  className="adm-input"
+                  placeholder="+229 01 XX XX XX XX"
                 />
               </div>
               <div>
@@ -153,8 +142,8 @@ export default function PatientForm() {
                   type="email"
                   value={form.email}
                   onChange={(e) => handleChange('email', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  placeholder="email@exemple.com"
+                  className="adm-input"
+                  placeholder="emailexemple@gmail.com"
                 />
               </div>
               <div>
@@ -163,7 +152,7 @@ export default function PatientForm() {
                   type="text"
                   value={form.address}
                   onChange={(e) => handleChange('address', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Adresse complète"
                 />
               </div>
@@ -173,8 +162,8 @@ export default function PatientForm() {
                   type="text"
                   value={form.city}
                   onChange={(e) => handleChange('city', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  placeholder="Conakry, Kindia, ..."
+                  className="adm-input"
+                  placeholder="Cotonou, Calavi, ..."
                 />
               </div>
             </div>
@@ -194,7 +183,7 @@ export default function PatientForm() {
                   type="text"
                   value={form.emergencyContact}
                   onChange={(e) => handleChange('emergencyContact', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Nom du contact d'urgence"
                 />
               </div>
@@ -204,8 +193,8 @@ export default function PatientForm() {
                   type="tel"
                   value={form.emergencyPhone}
                   onChange={(e) => handleChange('emergencyPhone', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  placeholder="+224 6XX XX XX XX"
+                  className="adm-input"
+                  placeholder="+229 01 XX XX XX XX"
                 />
               </div>
             </div>
@@ -226,23 +215,30 @@ export default function PatientForm() {
                 <select
                   value={form.insurance}
                   onChange={(e) => handleChange('insurance', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Non assuré</option>
-                  <option value="CNSS">CNSS</option>
-                  <option value="Sunu Assurances">Sunu Assurances</option>
-                  <option value="UNICORP">UNICORP</option>
-                  <option value="Saham Assurance">Saham Assurance</option>
-                  <option value="Groupama">Groupama</option>
+                  <option value="CNSS">Assuré</option>
+                  
                 </select>
-              </div>
+              </div> <br></br>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Nom de l'assurance</label>
+                <input
+                  type="text"
+                  value={form.insuranceNumber}
+                  onChange={(e) => handleChange('insuranceNumber', e.target.value)}
+                  className="adm-input"
+                  placeholder="Nom de l'assurance"
+                />
+              </div><br></br>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">N° police</label>
                 <input
                   type="text"
                   value={form.insuranceNumber}
                   onChange={(e) => handleChange('insuranceNumber', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Numéro d'assurance"
                 />
               </div>
@@ -255,7 +251,7 @@ export default function PatientForm() {
               value={form.notes}
               onChange={(e) => handleChange('notes', e.target.value)}
               rows={5}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none"
+              className="adm-input"
               placeholder="Allergies, antécédents, informations importantes..."
             />
           </div>
