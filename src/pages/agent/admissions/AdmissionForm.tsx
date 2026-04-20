@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { ArrowLeft, Save, BedDouble, User, Stethoscope } from 'lucide-react';
 import { useNavigation } from '../../../context/NavigationContext';
-import { patients, doctors, departments } from '../../../data/mockData';
+import { patients, departments } from '../../../data/mockData';
+import { useDoctors } from '../../../context/DoctorContext';
 
 export default function AdmissionForm() {
   const { navigate } = useNavigation();
+  const { doctors } = useDoctors();
   const [form, setForm] = useState({
     patientId: '',
     doctorId: '',
@@ -73,7 +75,7 @@ export default function AdmissionForm() {
               <select
                 value={form.patientId}
                 onChange={(e) => handleChange('patientId', e.target.value)}
-                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                className="adm-input"
               >
                 <option value="">Sélectionner un patient</option>
                 {patients.map((p) => (
@@ -96,7 +98,7 @@ export default function AdmissionForm() {
                 <select
                   value={form.department}
                   onChange={(e) => handleChange('department', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un service</option>
                   {departments.map((d) => (
@@ -110,7 +112,7 @@ export default function AdmissionForm() {
                   type="text"
                   value={form.room}
                   onChange={(e) => handleChange('room', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Ex: C-204"
                 />
               </div>
@@ -120,7 +122,7 @@ export default function AdmissionForm() {
                   type="text"
                   value={form.bed}
                   onChange={(e) => handleChange('bed', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Ex: B1"
                 />
               </div>
@@ -140,7 +142,7 @@ export default function AdmissionForm() {
                 <select
                   value={form.doctorId}
                   onChange={(e) => handleChange('doctorId', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un médecin</option>
                   {filteredDoctors.map((d) => (
@@ -154,7 +156,7 @@ export default function AdmissionForm() {
                   type="text"
                   value={form.reason}
                   onChange={(e) => handleChange('reason', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                   placeholder="Motif d'hospitalisation"
                 />
               </div>
@@ -164,7 +166,7 @@ export default function AdmissionForm() {
                   type="date"
                   value={form.admissionDate}
                   onChange={(e) => handleChange('admissionDate', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 />
               </div>
               <div>
@@ -173,7 +175,7 @@ export default function AdmissionForm() {
                   type="date"
                   value={form.expectedDischargeDate}
                   onChange={(e) => handleChange('expectedDischargeDate', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -182,7 +184,7 @@ export default function AdmissionForm() {
                   value={form.notes}
                   onChange={(e) => handleChange('notes', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none"
+                  className="adm-input"
                   placeholder="Informations supplémentaires..."
                 />
               </div>

@@ -6,6 +6,16 @@ import { useNavigation } from '../../../context/NavigationContext';
 import type { PatientStatus } from '../../../types/index';
 
 export default function PatientList() {
+  const avatarColors = [
+    'from-blue-400 to-cyan-500',
+    'from-emerald-400 to-teal-500',
+    'from-purple-400 to-indigo-500',
+    'from-pink-400 to-rose-500',
+    'from-amber-400 to-orange-500',
+    'from-red-400 to-pink-500',
+    'from-green-400 to-emerald-500',
+  ];
+
   const { navigate } = useNavigation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<PatientStatus | 'all'>('all');
@@ -27,16 +37,23 @@ export default function PatientList() {
     const diff = new Date().getFullYear() - new Date(dob).getFullYear();
     return diff;
   }
+  function getAvatarColor(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return avatarColors[Math.abs(hash) % avatarColors.length];
+}
 
   return (
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2.5">
-          <Users size={18} className="text-blue-600" />
+          <Users size={20} className="text-blue-600" />
           <span className="text-sm font-semibold text-blue-700">{allPatients.length} patients enregistrés</span>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
+          <button className="btn btn-secondary">
             <Download size={15} />
             Exporter
           </button>
@@ -56,7 +73,7 @@ export default function PatientList() {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Rechercher par nom, téléphone, numéro d'assurance..."
+              placeholder="              Rechercher par nom, téléphone, numéro d'assurance..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
@@ -89,7 +106,7 @@ export default function PatientList() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-5 py-3">Patient</th>
+                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-5 py-3 ">Patient</th>
                 <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Âge / Sexe</th>
                 <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3 hidden md:table-cell">Contact</th>
                 <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3 hidden lg:table-cell">Assurance</th>
@@ -112,7 +129,7 @@ export default function PatientList() {
                     <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                          <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getAvatarColor(p.id)} flex items-center justify-center text-white text-sm font-bold shrink-0 group-hover:scale-105 transition-transform`}>
                             {p.firstName[0]}{p.lastName[0]}
                           </div>
                           <div>
