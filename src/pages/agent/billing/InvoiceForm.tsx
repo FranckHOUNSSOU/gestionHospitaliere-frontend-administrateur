@@ -103,7 +103,7 @@ export default function InvoiceForm() {
                 <select
                   value={form.patientId}
                   onChange={(e) => setForm((f) => ({ ...f, patientId: e.target.value, admissionId: '' }))}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner un patient</option>
                   {patients.map((p) => (
@@ -117,7 +117,7 @@ export default function InvoiceForm() {
                   <select
                     value={form.admissionId}
                     onChange={(e) => setForm((f) => ({ ...f, admissionId: e.target.value }))}
-                    className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                    className="adm-input"
                   >
                     <option value="">Aucune admission</option>
                     {patientAdmissions.map((a) => (
@@ -132,7 +132,7 @@ export default function InvoiceForm() {
                   type="date"
                   value={form.dueDate}
                   onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 />
               </div>
               <div>
@@ -140,7 +140,7 @@ export default function InvoiceForm() {
                 <select
                   value={form.paymentMethod}
                   onChange={(e) => setForm((f) => ({ ...f, paymentMethod: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+                  className="adm-input"
                 >
                   <option value="">Sélectionner</option>
                   <option value="cash">Espèces</option>
@@ -252,7 +252,7 @@ export default function InvoiceForm() {
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 resize-none"
+              className="adm-input"
               placeholder="Informations complémentaires, modalités de paiement..."
             />
           </div>
