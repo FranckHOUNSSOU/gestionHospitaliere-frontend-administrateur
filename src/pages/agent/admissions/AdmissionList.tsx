@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Search, BedDouble, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Plus, Search, BedDouble, CheckCircle2, ArrowRight } from 'lucide-react';
 import Badge, { statusBadge } from '../../../components/agent/ui/Badge';
 import { admissions, departments } from '../../../data/mockData';
 import { useNavigation } from '../../../context/NavigationContext';
@@ -25,74 +25,64 @@ export default function AdmissionList() {
   const transferred = admissions.filter((a) => a.status === 'transferred');
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
         {[
-          { label: 'Admissions actives', value: active.length, color: 'bg-blue-50 border-blue-200 text-blue-700', icon: <BedDouble size={18} className="text-blue-500" /> },
-          { label: 'Sorties récentes', value: discharged.length, color: 'bg-emerald-50 border-emerald-200 text-emerald-700', icon: <CheckCircle2 size={18} className="text-emerald-500" /> },
-          { label: 'Transférés', value: transferred.length, color: 'bg-amber-50 border-amber-200 text-amber-700', icon: <ArrowRight size={18} className="text-amber-500" /> },
+          { label: 'Admissions actives', value: active.length,     icon: <BedDouble size={16} />,     kpi: 'adm-kpi-blue' },
+          { label: 'Sorties récentes',   value: discharged.length,  icon: <CheckCircle2 size={16} />,  kpi: 'adm-kpi-green' },
+          { label: 'Transférés',         value: transferred.length, icon: <ArrowRight size={16} />,    kpi: 'adm-kpi-orange' },
         ].map((s) => (
-          <div key={s.label} className={`flex items-center gap-3 rounded-xl border p-4 ${s.color}`}>
-            {s.icon}
-            <div>
-              <p className="text-xl font-bold">{s.value}</p>
-              <p className="text-xs opacity-80">{s.label}</p>
+          <div key={s.label} className={`adm-kpi ${s.kpi}`}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <p className="adm-kpi-lbl" style={{ marginBottom: 0 }}>{s.label}</p>
+              <span style={{ opacity: 0.6 }}>{s.icon}</span>
             </div>
+            <div className="adm-kpi-val">{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between p-4 border-b border-slate-100">
-          <div className="flex gap-3 flex-1">
-            <div className="relative flex-1 max-w-xs">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Patient, service, salle..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-              />
+      {/* Table card */}
+      <div className="adm-card">
+        {/* Filters */}
+        <div className="adm-card-head" style={{ gap: '10px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '8px', flex: 1, flexWrap: 'wrap' }}>
+            <div className="adm-search" style={{ flex: 1, minWidth: '200px', maxWidth: '320px' }}>
+              <span className="adm-search-icon"><Search size={14} /></span>
+              <input type="text" placeholder="Patient, service, salle..."
+                value={search} onChange={(e) => setSearch(e.target.value)}
+                className="adm-search-input" />
             </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as AdmissionStatus | 'all')}
-              className="text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-slate-600"
-            >
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as AdmissionStatus | 'all')}
+              className="adm-input" style={{ width: 'auto', padding: '6px 10px' }}>
               <option value="all">Tous les statuts</option>
               <option value="active">Actif</option>
               <option value="discharged">Sorti</option>
               <option value="transferred">Transféré</option>
             </select>
           </div>
-          <button
-            onClick={() => navigate('admission-new')}
-            className="btn btn-primary"
-          >
-            <Plus size={16} />
-            Nouvelle admission
+          <button onClick={() => navigate('admission-new')} className="adm-btn adm-btn-primary">
+            <Plus size={13} /> Nouvelle admission
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="adm-table">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-5 py-3">Patient</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Service / Salle</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3 hidden md:table-cell">Médecin</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Entrée</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3 hidden lg:table-cell">Sortie prévue</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3 hidden lg:table-cell">Motif</th>
-                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Statut</th>
+              <tr>
+                <th>Patient</th>
+                <th>Service / Salle</th>
+                <th>Médecin</th>
+                <th>Entrée</th>
+                <th>Sortie prévue</th>
+                <th>Motif</th>
+                <th>Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-400">Aucune admission trouvée</td>
-                </tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center', padding: '32px', color: 'var(--c-t3)' }}>Aucune admission trouvée</td></tr>
               ) : (
                 filtered.map((adm) => {
                   const { variant, label } = statusBadge(adm.status);
@@ -100,36 +90,37 @@ export default function AdmissionList() {
                     ? Math.floor((new Date().getTime() - new Date(adm.admissionDate).getTime()) / 86400000)
                     : null;
                   return (
-                    <tr key={adm.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    <tr key={adm.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div className="adm-avatar-sm" style={{ background: 'linear-gradient(135deg,#fbbf24,#f97316)' }}>
                             {adm.patientName.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                           </div>
                           <div>
-                            <button
-                              onClick={() => navigate('patient-detail', adm.patientId)}
-                              className="font-semibold text-blue-600 hover:underline"
-                            >
+                            <button onClick={() => navigate('patient-detail', adm.patientId)} className="adm-link-btn">
                               {adm.patientName}
                             </button>
-                            {days !== null && <p className="text-xs text-slate-400">{days} jour{days > 1 ? 's' : ''} d'hospitalisation</p>}
+                            {days !== null && <p className="adm-cell-mono">{days} jour{days > 1 ? 's' : ''}</p>}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <p className="font-medium text-slate-700">{adm.department}</p>
-                        <p className="text-xs text-slate-400">Salle {adm.room} · Lit {adm.bed}</p>
+                      <td>
+                        <p className="adm-cell-name">{adm.department}</p>
+                        <p className="adm-cell-mono">Salle {adm.room} · Lit {adm.bed}</p>
                       </td>
-                      <td className="px-4 py-3.5 hidden md:table-cell text-slate-600 text-xs">{adm.doctorName}</td>
-                      <td className="px-4 py-3.5 text-slate-600 text-xs">{new Date(adm.admissionDate).toLocaleDateString('fr-FR')}</td>
-                      <td className="px-4 py-3.5 hidden lg:table-cell text-slate-500 text-xs">
-                        {adm.expectedDischargeDate ? new Date(adm.expectedDischargeDate).toLocaleDateString('fr-FR') : '—'}
+                      <td><span className="adm-cell-mono" style={{ fontSize: '12px', color: 'var(--c-t1)' }}>{adm.doctorName}</span></td>
+                      <td><span className="adm-cell-mono">{new Date(adm.admissionDate).toLocaleDateString('fr-FR')}</span></td>
+                      <td>
+                        <span className="adm-cell-mono">
+                          {adm.expectedDischargeDate ? new Date(adm.expectedDischargeDate).toLocaleDateString('fr-FR') : '—'}
+                        </span>
                       </td>
-                      <td className="px-4 py-3.5 hidden lg:table-cell text-slate-600 text-xs max-w-[150px] truncate">{adm.reason}</td>
-                      <td className="px-4 py-3.5">
-                        <Badge variant={variant}>{label}</Badge>
+                      <td>
+                        <span className="adm-cell-mono adm-text-truncate" style={{ maxWidth: '140px', display: 'block' }}>
+                          {adm.reason}
+                        </span>
                       </td>
+                      <td><Badge variant={variant}>{label}</Badge></td>
                     </tr>
                   );
                 })
@@ -139,26 +130,31 @@ export default function AdmissionList() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Occupation des lits par service</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {departments.map((dep) => {
-            const pct = Math.round((dep.occupiedBeds / dep.beds) * 100);
-            const color = pct >= 90 ? 'text-red-600 bg-red-100' : pct >= 70 ? 'text-amber-600 bg-amber-100' : 'text-emerald-600 bg-emerald-100';
-            const barColor = pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-emerald-500';
-            return (
-              <div key={dep.id} className="border border-slate-100 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-slate-600 truncate pr-2">{dep.name}</p>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${color}`}>{pct}%</span>
+      {/* Bed occupation */}
+      <div className="adm-card">
+        <div className="adm-card-head">
+          <p className="adm-card-title">Occupation des lits par service</p>
+        </div>
+        <div className="adm-card-body">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+            {departments.map((dep) => {
+              const pct = Math.round((dep.occupiedBeds / dep.beds) * 100);
+              const tagCls = pct >= 90 ? 'adm-t-red' : pct >= 70 ? 'adm-t-amber' : 'adm-t-green';
+              const fillCls = pct >= 90 ? 'adm-pf-red' : pct >= 70 ? 'adm-pf-amber' : 'adm-pf-green';
+              return (
+                <div key={dep.id} style={{ border: '1px solid var(--c-bdr)', borderRadius: '8px', padding: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <p className="adm-cell-name adm-text-truncate" style={{ flex: 1, paddingRight: '6px' }}>{dep.name}</p>
+                    <span className={`adm-tag ${tagCls}`}>{pct}%</span>
+                  </div>
+                  <div className="adm-progress" style={{ marginBottom: '6px' }}>
+                    <div className={`adm-progress-fill ${fillCls}`} style={{ width: `${pct}%` }} />
+                  </div>
+                  <p className="adm-cell-mono">{dep.occupiedBeds} / {dep.beds} lits</p>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full mb-2">
-                  <div className={`h-full rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
-                </div>
-                <p className="text-xs text-slate-400">{dep.occupiedBeds} / {dep.beds} lits</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
