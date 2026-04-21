@@ -1,26 +1,22 @@
-import { BarChart3, TrendingUp, Users, CalendarDays, BedDouble, Receipt, Download } from 'lucide-react';
+import { BarChart3, Users, CalendarDays, BedDouble, Receipt, Download } from 'lucide-react';
 import { patients, appointments, admissions, invoices, departments } from '../../../data/mockData';
 
 const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-
-const monthlyPatients = [12, 18, 15, 22, 8, 14, 19, 25, 17, 21, 16, 24];
-const monthlyRevenue = [1200, 1850, 1400, 2100, 800, 1600, 1900, 2400, 1700, 2000, 1500, 2300];
+const monthlyPatients     = [12, 18, 15, 22, 8, 14, 19, 25, 17, 21, 16, 24];
+const monthlyRevenue      = [1200, 1850, 1400, 2100, 800, 1600, 1900, 2400, 1700, 2000, 1500, 2300];
 const monthlyAppointments = [45, 62, 55, 78, 38, 52, 65, 88, 60, 75, 58, 82];
 
 const maxPatients = Math.max(...monthlyPatients);
-const maxRevenue = Math.max(...monthlyRevenue);
-const maxAppts = Math.max(...monthlyAppointments);
+const maxRevenue  = Math.max(...monthlyRevenue);
+const maxAppts    = Math.max(...monthlyAppointments);
 
 function BarGroup({ values, max, color }: { values: number[]; max: number; color: string }) {
   return (
-    <div className="flex items-end gap-1.5 h-32">
+    <div className="adm-bars" style={{ height: '100px' }}>
       {values.map((v, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center justify-end gap-0.5">
-          <div
-            className={`w-full rounded-t-sm ${color} transition-all`}
-            style={{ height: `${Math.round((v / max) * 100)}%`, minHeight: '4px' }}
-            title={`${monthLabels[i]}: ${v}`}
-          />
+        <div key={i} className="adm-bar-col">
+          <div className="adm-bar" style={{ height: `${Math.round((v / max) * 100)}%`, background: color }} title={`${monthLabels[i]}: ${v}`} />
+          <span className="adm-bar-lbl">{monthLabels[i]}</span>
         </div>
       ))}
     </div>
@@ -29,7 +25,7 @@ function BarGroup({ values, max, color }: { values: number[]; max: number; color
 
 export default function Reports() {
   const totalRevenue = invoices.reduce((s, i) => s + i.total, 0);
-  const totalPaid = invoices.reduce((s, i) => s + i.paid, 0);
+  const totalPaid    = invoices.reduce((s, i) => s + i.paid, 0);
   const collectionRate = totalRevenue > 0 ? Math.round((totalPaid / totalRevenue) * 100) : 0;
 
   const apptByDept = departments.map((d) => ({
@@ -40,9 +36,9 @@ export default function Reports() {
   const maxDeptCount = Math.max(...apptByDept.map((d) => d.count), 1);
 
   const statusCounts = {
-    active: patients.filter((p) => p.status === 'active').length,
+    active:       patients.filter((p) => p.status === 'active').length,
     hospitalized: patients.filter((p) => p.status === 'hospitalized').length,
-    discharged: patients.filter((p) => p.status === 'discharged').length,
+    discharged:   patients.filter((p) => p.status === 'discharged').length,
   };
 
   const apptStatusCounts = {
@@ -53,133 +49,115 @@ export default function Reports() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 className="text-base font-bold text-slate-800">Vue globale — Avril 2026</h2>
-          <p className="text-sm text-slate-500">Statistiques de l'activité hospitalière</p>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--c-t0)', margin: 0 }}>Vue globale — Avril 2026</p>
+          <p style={{ fontSize: '12px', color: 'var(--c-t2)', margin: '2px 0 0' }}>Statistiques de l'activité hospitalière</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 text-sm rounded-lg hover:bg-slate-100 transition-colors">
-          <Download size={15} />
-          Exporter le rapport
-        </button>
+        <button className="adm-btn"><Download size={13} /> Exporter le rapport</button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* KPI cards */}
+      <div className="adm-kpi-grid">
         {[
-          { label: 'Total patients', value: patients.length, sub: `+2 ce mois`, icon: <Users size={18} />, color: 'blue' },
-          { label: 'RDV ce mois', value: appointments.length, sub: `${apptStatusCounts.completed} terminés`, icon: <CalendarDays size={18} />, color: 'cyan' },
-          { label: 'Taux d\'occupation', value: `${Math.round((departments.reduce((s, d) => s + d.occupiedBeds, 0) / departments.reduce((s, d) => s + d.beds, 0)) * 100)}%`, sub: `${departments.reduce((s, d) => s + d.occupiedBeds, 0)} lits occupés`, icon: <BedDouble size={18} />, color: 'amber' },
-          { label: 'Taux de recouvrement', value: `${collectionRate}%`, sub: `${(totalPaid / 1000).toFixed(0)}K GNF encaissés`, icon: <Receipt size={18} />, color: 'emerald' },
-        ].map((stat) => {
-          const colors: Record<string, string> = {
-            blue: 'border-blue-200 bg-blue-50 text-blue-700',
-            cyan: 'border-cyan-200 bg-cyan-50 text-cyan-700',
-            amber: 'border-amber-200 bg-amber-50 text-amber-700',
-            emerald: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-          };
-          return (
-            <div key={stat.label} className={`rounded-xl border p-4 ${colors[stat.color]}`}>
-              <div className="flex items-center gap-2 mb-2 opacity-70">
-                {stat.icon}
-                <span className="text-xs font-semibold uppercase tracking-wider">{stat.label}</span>
-              </div>
-              <p className="text-2xl font-bold">{stat.value}</p>
-              <p className="text-xs opacity-70 mt-0.5">{stat.sub}</p>
+          { label: 'Total patients',     value: patients.length,    sub: '+2 ce mois',                            icon: <Users size={16} />,       kpi: 'adm-kpi-blue' },
+          { label: 'RDV ce mois',        value: appointments.length,sub: `${apptStatusCounts.completed} terminés`,icon: <CalendarDays size={16} />, kpi: 'adm-kpi-blue' },
+          { label: "Taux d'occupation",  value: `${Math.round((departments.reduce((s, d) => s + d.occupiedBeds, 0) / departments.reduce((s, d) => s + d.beds, 0)) * 100)}%`,
+            sub: `${departments.reduce((s, d) => s + d.occupiedBeds, 0)} lits occupés`, icon: <BedDouble size={16} />, kpi: 'adm-kpi-orange' },
+          { label: 'Taux de recouvrement', value: `${collectionRate}%`, sub: `${(totalPaid / 1000).toFixed(0)}K GNF encaissés`, icon: <Receipt size={16} />, kpi: 'adm-kpi-green' },
+        ].map((stat) => (
+          <div key={stat.label} className={`adm-kpi ${stat.kpi}`}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <p className="adm-kpi-lbl" style={{ marginBottom: 0 }}>{stat.label}</p>
+              <span style={{ opacity: 0.6 }}>{stat.icon}</span>
             </div>
-          );
-        })}
+            <div className="adm-kpi-val">{stat.value}</div>
+            <p className="adm-kpi-note adm-note-neutral">{stat.sub}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Nouveaux patients / mois</h3>
-          <p className="text-xs text-slate-400 mb-4">Année 2026</p>
-          <BarGroup values={monthlyPatients} max={maxPatients} color="bg-blue-500" />
-          <div className="flex justify-between mt-2">
-            {monthLabels.map((m) => (
-              <span key={m} className="flex-1 text-center text-[10px] text-slate-400">{m}</span>
-            ))}
+      {/* Bar charts */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+        {[
+          { title: 'Nouveaux patients / mois', sub: 'Année 2026', values: monthlyPatients, max: maxPatients, color: 'var(--c-accent)' },
+          { title: 'Rendez-vous / mois',       sub: 'Année 2026', values: monthlyAppointments, max: maxAppts, color: 'var(--c-green)' },
+          { title: 'Recettes (K GNF) / mois',  sub: 'Année 2026', values: monthlyRevenue,  max: maxRevenue,  color: 'var(--c-amber)' },
+        ].map((chart) => (
+          <div key={chart.title} className="adm-card">
+            <div className="adm-card-head">
+              <div>
+                <p className="adm-card-title">{chart.title}</p>
+                <p className="adm-card-sub">{chart.sub}</p>
+              </div>
+              <BarChart3 size={14} style={{ color: 'var(--c-t3)' }} />
+            </div>
+            <div className="adm-card-body">
+              <BarGroup values={chart.values} max={chart.max} color={chart.color} />
+            </div>
           </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Rendez-vous / mois</h3>
-          <p className="text-xs text-slate-400 mb-4">Année 2026</p>
-          <BarGroup values={monthlyAppointments} max={maxAppts} color="bg-cyan-500" />
-          <div className="flex justify-between mt-2">
-            {monthLabels.map((m) => (
-              <span key={m} className="flex-1 text-center text-[10px] text-slate-400">{m}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Recettes (K GNF) / mois</h3>
-          <p className="text-xs text-slate-400 mb-4">Année 2026</p>
-          <BarGroup values={monthlyRevenue} max={maxRevenue} color="bg-emerald-500" />
-          <div className="flex justify-between mt-2">
-            {monthLabels.map((m) => (
-              <span key={m} className="flex-1 text-center text-[10px] text-slate-400">{m}</span>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-4">RDV par service</h3>
-          <div className="space-y-3">
+      {/* RDV par service + Répartition patients */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div className="adm-card">
+          <div className="adm-card-head">
+            <p className="adm-card-title">RDV par service</p>
+          </div>
+          <div className="adm-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {apptByDept.filter((d) => d.count > 0).map((dep) => (
               <div key={dep.name}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-600 font-medium">{dep.name}</span>
-                  <span className="text-slate-500 font-semibold">{dep.count}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--c-t1)' }}>{dep.name}</span>
+                  <span className="adm-cell-mono">{dep.count}</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full">
-                  <div
-                    className="h-full bg-blue-500 rounded-full"
-                    style={{ width: `${Math.round((dep.count / maxDeptCount) * 100)}%` }}
-                  />
+                <div className="adm-progress">
+                  <div className="adm-progress-fill adm-pf-blue" style={{ width: `${Math.round((dep.count / maxDeptCount) * 100)}%` }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-sm font-semibold text-slate-700 mb-4">Répartition des patients</h3>
-          <div className="space-y-4">
+        <div className="adm-card">
+          <div className="adm-card-head">
+            <p className="adm-card-title">Répartition des patients</p>
+          </div>
+          <div className="adm-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Par statut</p>
+              <p className="adm-sec-h">Par statut</p>
               {[
-                { label: 'Actifs', value: statusCounts.active, color: 'bg-emerald-500', total: patients.length },
-                { label: 'Hospitalisés', value: statusCounts.hospitalized, color: 'bg-blue-500', total: patients.length },
-                { label: 'Sortis', value: statusCounts.discharged, color: 'bg-slate-400', total: patients.length },
+                { label: 'Actifs',        value: statusCounts.active,       fillCls: 'adm-pf-green' },
+                { label: 'Hospitalisés',  value: statusCounts.hospitalized, fillCls: 'adm-pf-blue' },
+                { label: 'Sortis',        value: statusCounts.discharged,   fillCls: 'adm-pf-amber' },
               ].map((s) => (
-                <div key={s.label} className="mb-2">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600">{s.label}</span>
-                    <span className="text-slate-500">{s.value} ({Math.round((s.value / s.total) * 100)}%)</span>
+                <div key={s.label} style={{ marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--c-t2)' }}>{s.label}</span>
+                    <span className="adm-cell-mono">{s.value} ({Math.round((s.value / patients.length) * 100)}%)</span>
                   </div>
-                  <div className="h-2 bg-slate-100 rounded-full">
-                    <div className={`h-full ${s.color} rounded-full`} style={{ width: `${Math.round((s.value / s.total) * 100)}%` }} />
+                  <div className="adm-progress">
+                    <div className={`adm-progress-fill ${s.fillCls}`} style={{ width: `${Math.round((s.value / patients.length) * 100)}%` }} />
                   </div>
                 </div>
               ))}
             </div>
-            <div className="pt-3 border-t border-slate-100">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Rendez-vous par statut</p>
+
+            <div style={{ paddingTop: '10px', borderTop: '1px solid var(--c-bdr)' }}>
+              <p className="adm-sec-h">Rendez-vous par statut</p>
               {[
-                { label: 'Terminés', value: apptStatusCounts.completed, color: 'bg-emerald-500' },
-                { label: 'Confirmés', value: apptStatusCounts.confirmed, color: 'bg-blue-500' },
-                { label: 'Planifiés', value: apptStatusCounts.scheduled, color: 'bg-cyan-500' },
-                { label: 'Annulés', value: apptStatusCounts.cancelled, color: 'bg-red-400' },
+                { label: 'Terminés',  value: apptStatusCounts.completed, dot: 'var(--c-green)' },
+                { label: 'Confirmés', value: apptStatusCounts.confirmed,  dot: 'var(--c-accent)' },
+                { label: 'Planifiés', value: apptStatusCounts.scheduled,  dot: 'var(--c-amber)' },
+                { label: 'Annulés',   value: apptStatusCounts.cancelled,  dot: 'var(--c-red)' },
               ].map((s) => (
-                <div key={s.label} className="flex items-center gap-3 mb-1.5">
-                  <div className={`w-3 h-3 rounded-full ${s.color} shrink-0`} />
-                  <span className="text-xs text-slate-600 flex-1">{s.label}</span>
-                  <span className="text-xs font-semibold text-slate-700">{s.value}</span>
+                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
+                  <span style={{ fontSize: '12px', color: 'var(--c-t2)', flex: 1 }}>{s.label}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--c-t0)' }}>{s.value}</span>
                 </div>
               ))}
             </div>
@@ -187,32 +165,34 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Situation financière</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-          {[
-            { label: 'Total facturé', value: totalRevenue, color: 'text-slate-700' },
-            { label: 'Encaissé', value: totalPaid, color: 'text-emerald-600' },
-            { label: 'En attente', value: invoices.filter((i) => i.status === 'pending' || i.status === 'partial').reduce((s, i) => s + (i.total - i.paid), 0), color: 'text-amber-600' },
-            { label: 'En retard', value: invoices.filter((i) => i.status === 'overdue').reduce((s, i) => s + i.total, 0), color: 'text-red-600' },
-          ].map((s) => (
-            <div key={s.label} className="text-center p-3 bg-slate-50 rounded-xl">
-              <p className={`text-xl font-bold ${s.color}`}>{(s.value / 1000).toFixed(0)}K</p>
-              <p className="text-xs text-slate-400 mt-0.5">{s.label} (GNF)</p>
-            </div>
-          ))}
+      {/* Financial summary */}
+      <div className="adm-card">
+        <div className="adm-card-head">
+          <p className="adm-card-title">Situation financière</p>
         </div>
-
-        <div>
-          <div className="flex justify-between text-xs text-slate-500 mb-1">
-            <span>Taux de recouvrement</span>
-            <span className="font-semibold text-slate-700">{collectionRate}%</span>
+        <div className="adm-card-body">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '16px' }}>
+            {[
+              { label: 'Total facturé', value: totalRevenue, color: 'var(--c-t0)' },
+              { label: 'Encaissé',      value: totalPaid,    color: 'var(--c-green)' },
+              { label: 'En attente',    value: invoices.filter((i) => i.status === 'pending' || i.status === 'partial').reduce((s, i) => s + (i.total - i.paid), 0), color: 'var(--c-amber)' },
+              { label: 'En retard',     value: invoices.filter((i) => i.status === 'overdue').reduce((s, i) => s + i.total, 0), color: 'var(--c-red)' },
+            ].map((s) => (
+              <div key={s.label} style={{ background: 'var(--c-surf2)', border: '1px solid var(--c-bdr)', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
+                <p style={{ fontSize: '18px', fontWeight: 700, color: s.color, margin: '0 0 4px' }}>{(s.value / 1000).toFixed(0)}K</p>
+                <p className="adm-cell-mono" style={{ textAlign: 'center' }}>{s.label} (GNF)</p>
+              </div>
+            ))}
           </div>
-          <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
-              style={{ width: `${collectionRate}%` }}
-            />
+
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--c-t2)' }}>Taux de recouvrement</span>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--c-t0)' }}>{collectionRate}%</span>
+            </div>
+            <div className="adm-progress" style={{ height: '10px' }}>
+              <div className="adm-progress-fill adm-pf-green" style={{ width: `${collectionRate}%` }} />
+            </div>
           </div>
         </div>
       </div>
