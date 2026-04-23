@@ -22,7 +22,7 @@ interface CreateUserDto {
   prenom: string;
   email: string;
   motDePasse: string;
-  role: 'MEDECIN' | 'AGENT_ADMINISTRATIF';
+  role: 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
   telephone?: string;
   service?: string;
   numeroOrdre?: string;
@@ -33,6 +33,7 @@ interface CreateUserDto {
 const ROLES = [
   { value: 'MEDECIN', label: 'Médecin' },
   { value: 'AGENT_ADMINISTRATIF', label: 'Agent administratif' },
+  { value: 'AGENT_RENSEIGNEMENT', label: 'Agent renseignement' },
 ] as const;
 
 const SERVICES = [
@@ -46,7 +47,7 @@ const SERVICES = [
   { value: 'Administration', label: 'Administration système' },
 ];
 
-const VALID_ROLES = ['MEDECIN', 'AGENT_ADMINISTRATIF'] as const;
+const VALID_ROLES = ['MEDECIN', 'AGENT_ADMINISTRATIF', 'AGENT_RENSEIGNEMENT'] as const;
 type ValidRole = typeof VALID_ROLES[number];
 
 const initialForm = {

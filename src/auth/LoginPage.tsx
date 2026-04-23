@@ -29,7 +29,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(formData);
-      navigate('/dashboard');
+     
     } catch {
       setError('Identifiants incorrects. Veuillez réessayer.');
     } finally {

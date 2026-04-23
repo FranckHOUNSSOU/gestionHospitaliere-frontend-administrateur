@@ -1,5 +1,5 @@
 
-export type UserRole = 'ADMINISTRATEUR' | 'MEDECIN' | 'AGENT_ADMINISTRATIF';
+export type UserRole = 'ADMINISTRATEUR' | 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
 
 // L'API renvoie actif: boolean — pas de statut "Bloqué" dans ce backend
 export interface User {
@@ -31,7 +31,7 @@ export interface CreateUserPayload {
   prenom: string;
   email: string;
   motDePasse: string;
-  role: 'MEDECIN' | 'AGENT_ADMINISTRATIF';
+  role: 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
   telephone?: string;
   service?: string;
   numeroOrdre?: string;
