@@ -8,11 +8,13 @@ const ROLE_LABELS: Record<UserRole, string> = {
   ADMINISTRATEUR:      'Administrateur',
   MEDECIN:             'Médecin',
   AGENT_ADMINISTRATIF: 'Agent adm.',
+  AGENT_RENSEIGNEMENT: 'Agent renseignement',
 };
 
 const ROLE_BADGE: Record<UserRole, { bg: string; color: string }> = {
   MEDECIN:             { bg: '#d1fae5', color: '#065f46' },
   AGENT_ADMINISTRATIF: { bg: '#dbeafe', color: '#1e40af' },
+  AGENT_RENSEIGNEMENT: { bg: '#f3e8ff', color: '#7e22ce' },
   ADMINISTRATEUR:      { bg: '#ede9fe', color: '#5b21b6' },
 };
 
@@ -176,6 +178,7 @@ export function UserListPage() {
           <option value="MEDECIN">Médecin</option>
           <option value="AGENT_ADMINISTRATIF">Agent adm.</option>
           <option value="ADMINISTRATEUR">Administrateur</option>
+          <option value="AGENT_RENSEIGNEMENT">Agent renseignement</option>
         </select>
         <select
           value={filters.actif}

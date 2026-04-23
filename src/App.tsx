@@ -21,6 +21,9 @@ import InvoiceList from './pages/agent/billing/InvoiceList';
 import Reports from './pages/agent/reports/Reports';
 import PatientForm from './pages/agent/patients/PatientForm';
 import PatientList from './pages/agent/patients/PatientList';
+import { AgentRLayout } from './components/agentR/layout/agentRLayout';
+import AccueilPatient from './pages/agentR/AccueilPatient';
+import RechercheDossier from './pages/agentR/RechercheDossier';
 
 const UserListPage = lazy(() => import('./pages/admin/users'));
 
@@ -31,9 +34,8 @@ function App() {
         <ThemeProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/users" element={<UserListPage />} />
 
-            {/* ADMINISTRATEUR */}
+            {/* ── ADMINISTRATEUR ───────────────────────── */}
             <Route
               path="/admin"
               element={
@@ -50,7 +52,7 @@ function App() {
               } />
             </Route>
 
-            {/* AGENT ADMINISTRATIF */}
+            {/* ── AGENT ADMINISTRATIF ──────────────────── */}
             <Route
               path="/agent"
               element={
@@ -61,28 +63,32 @@ function App() {
                 </PrivateRoute>
               }
             >
-              {/* Dashboard — /agent et /agent/DashboardAgent */}
               <Route index element={<DashboardAgent />} />
               <Route path="DashboardAgent" element={<DashboardAgent />} />
-
-              {/* Patients */}
               <Route path="patients/PatientList" element={<PatientList />} />
               <Route path="patients/PatientForm" element={<PatientForm />} />
-
-              {/* Admissions */}
               <Route path="admissions/AdmissionList" element={<AdmissionList />} />
               <Route path="admissions/AdmissionForm" element={<AdmissionForm />} />
-
-              {/* Rendez-vous */}
               <Route path="appointments/AppointmentList" element={<AppointmentList />} />
               <Route path="appointments/AppointmentForm" element={<AppointmentForm />} />
-
-              {/* Facturation */}
               <Route path="billing/InvoiceList" element={<InvoiceList />} />
               <Route path="billing/InvoiceForm" element={<InvoiceForm />} />
-
-              {/* Rapports */}
               <Route path="reports/Reports" element={<Reports />} />
+            </Route>
+
+            {/* ── AGENT DE RENSEIGNEMENT ───────────────── */}
+            <Route
+              path="/agentR"
+              element={
+                <PrivateRoute requiredRole="AGENT_RENSEIGNEMENT">
+                  <AgentRLayout />
+                </PrivateRoute>
+              }
+            >
+             
+              <Route index element={<AccueilPatient />} />
+              <Route path="AccueilPatient" element={<AccueilPatient />} />
+              <Route path="RechercheDossier" element={<RechercheDossier />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />

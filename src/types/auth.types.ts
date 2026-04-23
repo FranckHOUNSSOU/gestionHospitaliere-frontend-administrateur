@@ -5,7 +5,7 @@ export interface LoginFormData {
 }
 
 // ← valeurs exactes renvoyées par le backend
-export type UserRole = 'ADMINISTRATEUR' | 'MEDECIN' | 'AGENT_ADMINISTRATIF';
+export type UserRole = 'ADMINISTRATEUR' | 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
 
 export interface User {
   id: string;
