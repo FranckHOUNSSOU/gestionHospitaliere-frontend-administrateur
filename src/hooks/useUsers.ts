@@ -3,9 +3,8 @@
 // Les composants n'ont qu'à appeler ce hook — ils ne touchent jamais l'API directement.
 
 import { useState, useEffect, useCallback } from 'react';
-import { userService } from '../services/userService';
-import type { UserFilters } from '../types/user';
-import type {  User } from '../types/user';
+import { utilisateursData } from '../data/utilisateurs';
+import type { UserFilters, User } from '../types/user';
 
 export function useUsers() {
   const [users, setUsers]     = useState<User[]>([]);
@@ -24,7 +23,7 @@ export function useUsers() {
     setLoading(true);
     setError(null);
     try {
-      const data = await userService.getUsers(filters);
+      const data = await utilisateursData.lister(filters);
       setUsers(data);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Erreur inconnue');
@@ -56,23 +55,22 @@ export function useUsers() {
   // --- Actions sur les comptes ---
 
   const activateUser = async (id: string) => {
-    await userService.activateUser(id);
-    // Met à jour localement sans recharger toute la liste
+    await utilisateursData.activer(id);
     setUsers(prev => prev.map(u => u.id === id ? { ...u, actif: true } : u));
   };
 
   const deactivateUser = async (id: string) => {
-    await userService.deactivateUser(id);
+    await utilisateursData.desactiver(id);
     setUsers(prev => prev.map(u => u.id === id ? { ...u, actif: false } : u));
   };
 
   const deleteUser = async (id: string) => {
-    await userService.deleteUser(id);
+    await utilisateursData.supprimer(id);
     setUsers(prev => prev.filter(u => u.id !== id));
   };
 
-  const createUser = async (payload: Parameters<typeof userService.createUser>[0]): Promise<void> => {
-    const newUser = await userService.createUser(payload);
+  const createUser = async (payload: Parameters<typeof utilisateursData.creer>[0]): Promise<void> => {
+    const newUser = await utilisateursData.creer(payload);
     setUsers(prev => [newUser, ...prev]);
     // Ne rien retourner explicitement (Promise<void>)
   };

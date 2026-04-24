@@ -1,61 +1,33 @@
 import React, { useState, useRef } from 'react';
-import { Container, Row, Col, Badge, Spinner, Alert } from 'react-bootstrap';
 import {
   Search, User, ChevronRight, FileText,
-  Calendar, Phone, X, Filter,
+  Calendar, Phone, X, Filter, AlertTriangle,
 } from 'lucide-react';
-import { api, type PatientBackend } from './api';
+import { patientsData, type Patient } from '../../data/patients';
 
-/* ─── Minimal custom CSS ─── */
-const STYLE = `
-  body { background: #f4f6fb !important; }
-
-  .rd-result-row {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 20px;
-    border-bottom: 1px solid #e2e8f0;
-    cursor: pointer; transition: background .12s;
-  }
-  .rd-result-row:last-child { border-bottom: none; }
-  .rd-result-row:hover { background: #f8fafc; }
-
-  .rd-avatar {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
-`;
-
-const AVATAR_COLORS = ['#2563eb', '#16a34a', '#7c3aed', '#ea580c', '#dc2626'];
+const AVATAR_COLORS = ['#388bfd', '#3fb950', '#7c3aed', '#d29922', '#f85149'];
 const initials = (nom: string, prenom: string) =>
   `${nom[0] ?? '?'}${prenom[0] ?? ''}`.toUpperCase();
 
-/* ─── Composant ─── */
 const RechercheDossier: React.FC = () => {
   const [searchType, setSearchType] = useState('nom');
   const [query, setQuery]           = useState('');
-  const [results, setResults]       = useState<PatientBackend[]>([]);
+  const [results, setResults]       = useState<Patient[]>([]);
   const [loading, setLoading]       = useState(false);
   const [searched, setSearched]     = useState(false);
   const [error, setError]           = useState<string | null>(null);
 
-  /* Debounce ref pour la recherche auto */
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runSearch = async (q: string) => {
     if (!q.trim()) return;
     setLoading(true); setError(null);
     try {
-      const data = await api.get<PatientBackend[]>(
-        `/patients/recherche?q=${encodeURIComponent(q.trim())}`
-      );
-      setResults(data);
-      setSearched(true);
+      const data = await patientsData.rechercher(q.trim());
+      setResults(data); setSearched(true);
     } catch (err: any) {
       setError(err?.message ?? 'Erreur lors de la recherche.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,197 +47,218 @@ const RechercheDossier: React.FC = () => {
   };
 
   const placeholder =
-    searchType === 'ipp' ? 'Ex: IPP-2024-0001'    :
-    searchType === 'tel' ? 'Ex: +229 97 00 11 22'  :
-    searchType === 'ddn' ? 'Ex: 08/03/1988'        :
+    searchType === 'ipp' ? 'Ex: IPP-2024-0001'     :
+    searchType === 'tel' ? 'Ex: +229 97 00 11 22'   :
+    searchType === 'ddn' ? 'Ex: 08/03/1988'         :
                            'Ex: HOUNSOU ou Franck';
 
   return (
-    <>
-      <style>{STYLE}</style>
-      <Container fluid style={{ background: '#f4f6fb', minHeight: '100vh', padding: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-        {/* En-tête */}
-        <div className="mb-4">
-          <h5 className="fw-bold mb-1" style={{ fontSize: 18 }}>Recherche Dossier</h5>
-          <div className="text-muted" style={{ fontSize: 13 }}>
-            Retrouvez un patient par IPP, nom, prénom, téléphone ou date de naissance
+      {/* En-tête */}
+      <div>
+        <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--c-t0)', margin: 0 }}>Recherche Dossier</p>
+        <p style={{ fontSize: 13, color: 'var(--c-t2)', margin: '4px 0 0' }}>
+          Retrouvez un patient par IPP, nom, prénom, téléphone ou date de naissance
+        </p>
+      </div>
+
+      {/* Carte de recherche */}
+      <div className="adm-card" style={{ overflow: 'hidden' }}>
+        <div className="adm-card-head">
+          <div style={{
+            width: 34, height: 34, borderRadius: 8,
+            background: 'var(--c-amber-bg)', color: 'var(--c-amber)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Search size={16} />
+          </div>
+          <div>
+            <p className="adm-card-title">Recherche de dossier</p>
+            <p className="adm-card-sub">Saisie automatique à partir de 2 caractères</p>
           </div>
         </div>
 
-        {/* Carte de recherche */}
-        <div className="card border-0 shadow-sm mb-3 overflow-hidden">
-          <div className="card-header bg-light border-bottom d-flex align-items-center gap-3 py-3">
-            <div className="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center"
-              style={{ width: 36, height: 36 }}><Search size={17}/></div>
-            <div>
-              <div className="fw-bold" style={{ fontSize: 14 }}>Recherche de dossier</div>
-              <div className="text-muted" style={{ fontSize: 12 }}>
-                Saisie automatique à partir de 2 caractères
-              </div>
-            </div>
+        <div className="adm-card-body" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <select
+            className="adm-input"
+            style={{ width: 'auto', minWidth: 190, flexShrink: 0 }}
+            value={searchType}
+            onChange={e => setSearchType(e.target.value)}
+          >
+            <option value="nom">Par Nom / Prénom</option>
+            <option value="ipp">Par IPP</option>
+            <option value="tel">Par Téléphone</option>
+            <option value="ddn">Par Date de naissance</option>
+          </select>
+
+          <div className="adm-search" style={{ flex: 1, minWidth: 200 }}>
+            <span className="adm-search-icon"><Search size={13} /></span>
+            <input
+              className="adm-search-input"
+              placeholder={placeholder}
+              value={query}
+              onChange={handleChange}
+              onKeyDown={e => e.key === 'Enter' && runSearch(query)}
+            />
+            {query && (
+              <button
+                onClick={reset}
+                style={{
+                  position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-t3)',
+                  display: 'flex', alignItems: 'center', padding: 2,
+                }}
+              >
+                <X size={13} />
+              </button>
+            )}
           </div>
 
-          <div className="card-body d-flex gap-2 flex-wrap">
-            {/* Sélecteur type */}
-            <select
-              className="form-select form-select-sm"
-              style={{ minWidth: 200, width: 'auto' }}
-              value={searchType}
-              onChange={e => setSearchType(e.target.value)}
-            >
-              <option value="nom">Par Nom / Prénom</option>
-              <option value="ipp">Par IPP</option>
-              <option value="tel">Par Téléphone</option>
-              <option value="ddn">Par Date de naissance</option>
-            </select>
+          <button
+            className="adm-btn adm-btn-primary"
+            onClick={() => runSearch(query)}
+            disabled={loading || !query.trim()}
+          >
+            <Search size={13} /> {loading ? 'Recherche…' : 'Rechercher'}
+          </button>
+        </div>
+      </div>
 
-            {/* Champ de saisie */}
-            <div className="position-relative flex-grow-1">
-              <Search size={13} className="position-absolute text-muted"
-                style={{ left: 10, top: '50%', transform: 'translateY(-50%)' }}/>
-              <input
-                className="form-control form-control-sm ps-4 pe-4"
-                placeholder={placeholder}
-                value={query}
-                onChange={handleChange}
-                onKeyDown={e => e.key === 'Enter' && runSearch(query)}
-              />
-              {query && (
-                <button
-                  onClick={reset}
-                  className="btn btn-link p-0 position-absolute text-muted"
-                  style={{ right: 8, top: '50%', transform: 'translateY(-50%)', lineHeight: 1 }}
-                >
-                  <X size={14}/>
-                </button>
-              )}
+      {/* Erreur */}
+      {error && (
+        <div className="adm-alert adm-alert-danger">
+          <AlertTriangle size={14} style={{ flexShrink: 0 }} />
+          {error}
+          <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 16 }}>×</button>
+        </div>
+      )}
+
+      {/* État initial */}
+      {!searched && !loading && (
+        <div className="adm-card">
+          <div className="adm-card-body" style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 12, background: 'var(--c-surf2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px',
+            }}>
+              <FileText size={26} color="var(--c-t3)" />
             </div>
+            <p style={{ fontWeight: 700, color: 'var(--c-t0)', marginBottom: 4 }}>Lancez une recherche</p>
+            <p style={{ fontSize: 12, color: 'var(--c-t2)' }}>
+              Saisissez un critère de recherche ci-dessus pour retrouver un dossier patient
+            </p>
+          </div>
+        </div>
+      )}
 
-            {/* Bouton Rechercher */}
-            <button
-              className="btn btn-primary btn-sm d-flex align-items-center gap-2"
-              onClick={() => runSearch(query)}
-              disabled={loading || !query.trim()}
-            >
-              {loading
-                ? <><Spinner size="sm" animation="border"/> Recherche…</>
-                : <><Search size={13}/> Rechercher</>}
+      {/* Chargement */}
+      {loading && !searched && (
+        <div className="adm-card">
+          <div className="adm-card-body" style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%', margin: '0 auto 14px',
+              border: '3px solid var(--c-bdr)', borderTopColor: 'var(--c-accent)',
+              animation: 'spin 0.7s linear infinite',
+            }} />
+            <p style={{ fontSize: 13, color: 'var(--c-t2)' }}>Recherche en cours…</p>
+          </div>
+        </div>
+      )}
+
+      {/* Résultats */}
+      {searched && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 13, color: 'var(--c-t2)', fontWeight: 600 }}>
+              {results.length > 0
+                ? `${results.length} résultat(s) pour « ${query} »`
+                : `Aucun résultat pour « ${query} »`}
+            </span>
+            <button className="adm-btn" onClick={reset} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Filter size={11} /> Nouvelle recherche
             </button>
           </div>
-        </div>
 
-        {error && (
-          <Alert variant="danger" onClose={() => setError(null)} dismissible className="mb-3">
-            {error}
-          </Alert>
-        )}
-
-        {/* État initial */}
-        {!searched && !loading && (
-          <div className="card border-0 shadow-sm">
-            <div className="card-body text-center py-5">
-              <div className="bg-light rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
-                style={{ width: 56, height: 56 }}>
-                <FileText size={26} className="text-muted"/>
+          <div className="adm-card" style={{ overflow: 'hidden' }}>
+            {results.length === 0 ? (
+              <div className="adm-card-body" style={{ textAlign: 'center', padding: '48px 24px' }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: 12, background: 'var(--c-surf2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px',
+                }}>
+                  <User size={26} color="var(--c-t3)" />
+                </div>
+                <p style={{ fontWeight: 700, color: 'var(--c-t0)', marginBottom: 4 }}>Aucun patient trouvé</p>
+                <p style={{ fontSize: 12, color: 'var(--c-t2)' }}>
+                  Vérifiez l'orthographe ou essayez un autre critère de recherche
+                </p>
               </div>
-              <div className="fw-bold mb-1">Lancez une recherche</div>
-              <div className="text-muted" style={{ fontSize: 13 }}>
-                Saisissez un critère de recherche ci-dessus pour retrouver un dossier patient
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Spinner intermédiaire */}
-        {loading && !searched && (
-          <div className="card border-0 shadow-sm">
-            <div className="card-body text-center py-5">
-              <Spinner animation="border" variant="primary" className="mb-3"/>
-              <div className="text-muted" style={{ fontSize: 13 }}>Recherche en cours…</div>
-            </div>
-          </div>
-        )}
-
-        {/* Résultats */}
-        {searched && (
-          <>
-            <div className="d-flex align-items-center justify-content-between mb-2">
-              <div className="text-muted fw-semibold" style={{ fontSize: 13 }}>
-                {results.length > 0
-                  ? `${results.length} résultat(s) pour « ${query} »`
-                  : `Aucun résultat pour « ${query} »`}
-              </div>
-              <button className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" onClick={reset}>
-                <Filter size={11}/> Nouvelle recherche
-              </button>
-            </div>
-
-            <div className="card border-0 shadow-sm overflow-hidden">
-              {results.length === 0 ? (
-                <div className="card-body text-center py-5">
-                  <div className="bg-light rounded-3 d-inline-flex align-items-center justify-content-center mb-3"
-                    style={{ width: 56, height: 56 }}>
-                    <User size={26} className="text-muted"/>
+            ) : (
+              results.map((p, i) => (
+                <div
+                  key={p.id}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '14px 16px', borderBottom: '1px solid var(--c-bdr)',
+                    cursor: 'pointer', transition: 'background .1s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--c-surf2)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 9, flexShrink: 0,
+                    background: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 13, fontWeight: 700, color: '#fff',
+                  }}>
+                    {initials(p.nom, p.prenom)}
                   </div>
-                  <div className="fw-bold mb-1">Aucun patient trouvé</div>
-                  <div className="text-muted" style={{ fontSize: 13 }}>
-                    Vérifiez l'orthographe ou essayez un autre critère de recherche
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 700, fontSize: 13, color: 'var(--c-t0)', marginBottom: 4 }}>
+                      {p.nom}, {p.prenom}
+                    </p>
+                    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 11, color: 'var(--c-t3)' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <User size={10} />{p.sexe === 'F' ? 'Féminin' : 'Masculin'}
+                      </span>
+                      {p.dateNaissance && (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Calendar size={10} />{p.dateNaissance}
+                        </span>
+                      )}
+                      {p.telephoneMobile && (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <Phone size={10} />{p.telephoneMobile}
+                        </span>
+                      )}
+                    </div>
+                    {p.createdAt && (
+                      <p style={{ fontSize: 11, color: 'var(--c-t3)', marginTop: 3 }}>
+                        Enregistré le {new Date(p.createdAt).toLocaleDateString('fr-FR')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {p.statutProfil === 'Incomplet' && (
+                      <span className="adm-tag adm-t-amber" style={{ fontSize: 10 }}>Incomplet</span>
+                    )}
+                    <span className="adm-tag adm-t-blue" style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
+                      {p.numeroIpp}
+                    </span>
+                    <ChevronRight size={15} color="var(--c-t3)" />
                   </div>
                 </div>
-              ) : (
-                results.map((p, i) => (
-                  <div key={p.id} className="rd-result-row">
-                    <div className="rd-avatar" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                      {initials(p.nom, p.prenom)}
-                    </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
 
-                    <div className="flex-grow-1 overflow-hidden">
-                      <div className="fw-bold" style={{ fontSize: 13 }}>
-                        {p.nom}, {p.prenom}
-                      </div>
-                      <div className="d-flex gap-3 flex-wrap mt-1" style={{ fontSize: 11, color: '#64748b' }}>
-                        <span className="d-flex align-items-center gap-1">
-                          <User size={10}/>{p.sexe === 'F' ? 'Féminin' : 'Masculin'}
-                        </span>
-                        {p.dateNaissance && (
-                          <span className="d-flex align-items-center gap-1">
-                            <Calendar size={10}/>{p.dateNaissance}
-                          </span>
-                        )}
-                        {p.telephoneMobile && (
-                          <span className="d-flex align-items-center gap-1">
-                            <Phone size={10}/>{p.telephoneMobile}
-                          </span>
-                        )}
-                      </div>
-                      {p.createdAt && (
-                        <div className="text-muted mt-1" style={{ fontSize: 11 }}>
-                          Enregistré le : {new Date(p.createdAt).toLocaleDateString('fr-FR')}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="d-flex align-items-center gap-2 flex-shrink-0">
-                      {p.statutProfil === 'Incomplet' && (
-                        <Badge bg="warning" text="dark" style={{ fontSize: 10 }}>
-                          Incomplet
-                        </Badge>
-                      )}
-                      <span className="badge bg-primary bg-opacity-10 text-primary fw-semibold"
-                        style={{ fontSize: 11 }}>
-                        {p.numeroIpp}
-                      </span>
-                      <ChevronRight size={16} className="text-muted"/>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </>
-        )}
-      </Container>
-    </>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
   );
 };
 

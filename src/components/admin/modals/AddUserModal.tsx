@@ -1,17 +1,15 @@
-// src/components/auth/RegisterModal.tsx
-
 import { useState } from 'react';
 import {
   Modal, Form, Button, Row, Col, Alert, Spinner,
 } from 'react-bootstrap';
-import apiClient from '../../../services/apiClient';
+import client from '../../../api/clients';
 import ToastNotification from '../ui/ToastNotification';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './RegisterModal.css';
+import './AddUserModal.css';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-interface RegisterModalProps {
+interface AddUserModalProps {
   show: boolean;
   onHide: () => void;
   onSuccess?: () => void;
@@ -68,10 +66,6 @@ function isValidRole(value: string): value is ValidRole {
   return (VALID_ROLES as readonly string[]).includes(value);
 }
 
-/**
- * Traduit les messages d'erreur bruts du backend en messages lisibles.
- * On cible les cas métier connus ; les autres passent tels quels.
- */
 function traduireErreur(message: string): string {
   const m = message.toLowerCase();
   if (m.includes('email') && (m.includes('exist') || m.includes('déjà') || m.includes('conflit') || m.includes('unique'))) {
@@ -88,7 +82,7 @@ function traduireErreur(message: string): string {
 
 // ── Composant ──────────────────────────────────────────────────────────────
 
-export default function RegisterModal({ show, onHide, onSuccess }: RegisterModalProps) {
+export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalProps) {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -109,18 +103,14 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
     e.preventDefault();
     setError('');
 
-    // ── Validation ──────────────────────────────────────────────────────
     if (!form.nom.trim() || !form.prenom.trim() || !form.email.trim()) {
       setError('Nom, prénom et email sont obligatoires.');
       return;
     }
-
-    // Vérifie que le rôle est bien une valeur acceptée (pas la chaîne vide)
     if (!isValidRole(form.role)) {
       setError('Veuillez sélectionner un rôle.');
       return;
     }
-
     if (!form.motDePasse) {
       setError('Le mot de passe est obligatoire.');
       return;
@@ -134,29 +124,25 @@ export default function RegisterModal({ show, onHide, onSuccess }: RegisterModal
       return;
     }
 
-    // ── Construction du body (rôle garanti valide ici) ──────────────────
     const body: CreateUserDto = {
       nom: form.nom.trim(),
       prenom: form.prenom.trim(),
       email: form.email.trim(),
       motDePasse: form.motDePasse,
-      role: form.role,                           // TypeScript sait que c'est ValidRole
-      ...(form.telephone  && { telephone:   form.telephone.trim() }),
-      ...(form.service    && { service:     form.service }),
-      ...(form.numeroOrdre && { numeroOrdre: form.numeroOrdre.trim() }),
+      role: form.role,
+      ...(form.telephone   && { telephone:    form.telephone.trim() }),
+      ...(form.service     && { service:      form.service }),
+      ...(form.numeroOrdre && { numeroOrdre:  form.numeroOrdre.trim() }),
     };
 
-    // ── Appel API ───────────────────────────────────────────────────────
     setLoading(true);
     try {
-      await apiClient.post('/auth/users', body);
+      await client.post('/auth/users', body);
 
       const nomComplet = `${form.prenom.trim()} ${form.nom.trim()}`;
       handleClose();
-
       setToastMessage(`Compte de ${nomComplet} créé. Pensez à l'activer.`);
       setToastVisible(true);
-
       onSuccess?.();
     } catch (err: unknown) {
       const raw = err instanceof Error ? err.message : 'Une erreur est survenue. Veuillez réessayer.';

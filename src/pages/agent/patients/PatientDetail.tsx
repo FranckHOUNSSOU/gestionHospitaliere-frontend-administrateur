@@ -3,6 +3,7 @@ import { ArrowLeft, CreditCard as Edit2, Phone, Mail, MapPin, AlertTriangle, Plu
 import Badge, { statusBadge } from '../../../components/agent/ui/Badge';
 import { patients, appointments, admissions, invoices } from '../../../data/mockData';
 import { useNavigation } from '../../../context/NavigationContext';
+import { InfoRow } from './InfoRow';
 
 const tabs = ['Aperçu', 'Rendez-vous', 'Admissions', 'Factures'];
 
@@ -219,11 +220,3 @@ export default function PatientDetail() {
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="adm-info-row">
-      <span className="adm-info-k">{label}</span>
-      <span className="adm-info-v">{value}</span>
-    </div>
-  );
-}

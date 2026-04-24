@@ -1,23 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi } from '../api/admin.api';
+import { adminData } from '../data/admin';
 
 export const useAdminStats = () =>
   useQuery({
     queryKey: ['admin-stats'],
-    queryFn: adminApi.getStats,
+    queryFn: adminData.getStats,
     refetchInterval: 30_000,
   });
 
 export const useAdminUsers = () =>
   useQuery({
     queryKey: ['admin-users'],
-    queryFn: adminApi.getUsers,
+    queryFn: adminData.getUsers,
   });
 
 export const useBlockUser = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: adminApi.blockUser,
+    mutationFn: adminData.blockUser,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   });
 };
@@ -25,7 +25,7 @@ export const useBlockUser = () => {
 export const useActivateUser = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: adminApi.activateUser,
+    mutationFn: adminData.activateUser,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   });
 };
@@ -33,7 +33,7 @@ export const useActivateUser = () => {
 export const useCreateUser = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: adminApi.createUser,
+    mutationFn: adminData.createUser,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-users'] });
       qc.invalidateQueries({ queryKey: ['admin-stats'] });
@@ -44,13 +44,13 @@ export const useCreateUser = () => {
 export const useAdminLogs = () =>
   useQuery({
     queryKey: ['admin-logs'],
-    queryFn: adminApi.getLogs,
+    queryFn: adminData.getLogs,
     refetchInterval: 15_000,
   });
 
 export const useServicesStatus = () =>
   useQuery({
     queryKey: ['admin-services'],
-    queryFn: adminApi.getServices,
+    queryFn: adminData.getServices,
     refetchInterval: 60_000,
   });

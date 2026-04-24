@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import apiClient from '../services/apiClient';
+import client from '../api/clients';
 import { doctors as mockDoctors } from '../data/mockData';
 
 export interface Doctor {
@@ -25,8 +25,7 @@ export function DoctorProvider({ children }: { children: ReactNode }) {
   async function fetchDoctors() {
     setLoading(true);
     try {
-      // Appel API — récupère tous les utilisateurs avec le rôle MEDECIN
-      const data = await apiClient.get<Array<{
+      const { data } = await client.get<Array<{
         id: string;
         nom: string;
         prenom: string;

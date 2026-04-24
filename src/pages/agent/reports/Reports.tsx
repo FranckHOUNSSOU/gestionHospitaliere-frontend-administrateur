@@ -1,7 +1,7 @@
 import { BarChart3, Users, CalendarDays, BedDouble, Receipt, Download } from 'lucide-react';
 import { patients, appointments, admissions, invoices, departments } from '../../../data/mockData';
+import { BarGroup } from './BarGroup';
 
-const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 const monthlyPatients     = [12, 18, 15, 22, 8, 14, 19, 25, 17, 21, 16, 24];
 const monthlyRevenue      = [1200, 1850, 1400, 2100, 800, 1600, 1900, 2400, 1700, 2000, 1500, 2300];
 const monthlyAppointments = [45, 62, 55, 78, 38, 52, 65, 88, 60, 75, 58, 82];
@@ -9,19 +9,6 @@ const monthlyAppointments = [45, 62, 55, 78, 38, 52, 65, 88, 60, 75, 58, 82];
 const maxPatients = Math.max(...monthlyPatients);
 const maxRevenue  = Math.max(...monthlyRevenue);
 const maxAppts    = Math.max(...monthlyAppointments);
-
-function BarGroup({ values, max, color }: { values: number[]; max: number; color: string }) {
-  return (
-    <div className="adm-bars" style={{ height: '100px' }}>
-      {values.map((v, i) => (
-        <div key={i} className="adm-bar-col">
-          <div className="adm-bar" style={{ height: `${Math.round((v / max) * 100)}%`, background: color }} title={`${monthLabels[i]}: ${v}`} />
-          <span className="adm-bar-lbl">{monthLabels[i]}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function Reports() {
   const totalRevenue = invoices.reduce((s, i) => s + i.total, 0);

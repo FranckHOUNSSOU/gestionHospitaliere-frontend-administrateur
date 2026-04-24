@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import type { User, UserRole } from '../../types/user';
+import type { UserRole } from '../../types/user';
 import { useUsers } from '../../hooks/useUsers';
-import RegisterModal from '../../components/admin/auth/RegisterModal';
+import AddUserModal from '../../components/admin/modals/AddUserModal';
+import { ActionMenu } from '../../components/admin/ui/ActionMenu';
+
 
 const ROLE_LABELS: Record<UserRole, string> = {
   ADMINISTRATEUR:      'Administrateur',
@@ -46,66 +48,6 @@ const formatLogin = (iso: string | null) => {
   const mm  = String(d.getMinutes()).padStart(2, '0');
   return `${day}/${mon} ${hh}:${mm}`;
 };
-
-// ─── Menu d'actions (3 points) ───────────────────────────────────────────────
-
-function ActionMenu({
-  user, onActivate, onDeactivate, onDelete,
-}: {
-  user: User;
-  onActivate:   (id: string) => Promise<void>;
-  onDeactivate: (id: string) => Promise<void>;
-  onDelete:     (id: string) => Promise<void>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const run = async (fn: () => Promise<void>) => {
-    setBusy(true);
-    try { await fn(); } finally { setBusy(false); setOpen(false); }
-  };
-
-  return (
-    <div className="adm-action-menu">
-      <button
-        className="adm-action-menu-trigger"
-        onClick={() => setOpen(o => !o)}
-        disabled={busy}
-        title="Actions"
-      >
-        {busy ? '…' : '⋯'}
-      </button>
-      {open && (
-        <>
-          <div className="adm-action-menu-overlay" onClick={() => setOpen(false)} />
-          <div className="adm-action-menu-dropdown">
-            {user.actif ? (
-              <button className="adm-action-menu-item adm-action-menu-item--danger"
-                onClick={() => run(() => onDeactivate(user.id))}>
-                Désactiver le compte
-              </button>
-            ) : (
-              <button className="adm-action-menu-item"
-                style={{ color: 'var(--c-green)' }}
-                onClick={() => run(() => onActivate(user.id))}>
-                Activer le compte
-              </button>
-            )}
-            <div className="adm-action-menu-divider" />
-            <button className="adm-action-menu-item adm-action-menu-item--danger"
-              onClick={() => {
-                if (window.confirm(`Supprimer définitivement ${user.prenom} ${user.nom} ?`)) {
-                  run(() => onDelete(user.id));
-                }
-              }}>
-              Supprimer le compte
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 // ─── Page principale ──────────────────────────────────────────────────────────
 
@@ -365,7 +307,7 @@ export function UserListPage() {
       </div>
 
       {showModal && (
-        <RegisterModal
+        <AddUserModal
           show={showModal}
           onHide={() => setShowModal(false)}
           onSuccess={() => {}}
