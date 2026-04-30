@@ -12,9 +12,15 @@ import type {
   Chambre,
   Pole,
   ServiceHospitalier,
-  CreateChambreDto,
-  UpdateChambreDto,
 } from '../../services/chambres';
+
+interface ChambreFormState {
+  numero: string;
+  type: TypeChambre;
+  capacite: number;
+  description: string;
+  serviceId: string;
+}
 
 interface ChambreFormModalProps {
   chambre?: Chambre | null;
@@ -55,7 +61,7 @@ const CAPACITE_INFO: Partial<Record<TypeChambre, string>> = {
   [TypeChambre.SOINS_INTENSIFS]: 'En soins intensifs, chaque lit est un poste de surveillance.',
 };
 
-const FORM_INITIAL: CreateChambreDto = {
+const FORM_INITIAL: ChambreFormState = {
   numero: '', type: TypeChambre.INDIVIDUELLE, capacite: 1, description: '', serviceId: '',
 };
 
@@ -90,11 +96,11 @@ const iconPos: React.CSSProperties = {
 const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModalProps) => {
   const isEdit = !!chambre;
 
-  const [form, setForm] = useState<CreateChambreDto>(
+  const [form, setForm] = useState<ChambreFormState>(
     chambre
       ? {
           numero: chambre.numero, type: chambre.type,
-          capacite: chambre.capacite, description: chambre.description ?? '',
+          capacite: chambre.capacite, description: chambre.designation ?? '',
           serviceId: chambre.service.id,
         }
       : FORM_INITIAL
@@ -135,9 +141,15 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
     setLoading(true); setError('');
     try {
       if (isEdit && chambre) {
-        await updateChambre(chambre.id, { ...form, statut } as UpdateChambreDto);
+        await updateChambre(chambre.id, {
+            numero: form.numero, type: form.type, capacite: form.capacite,
+            designation: form.description || undefined, statut,
+          });
       } else {
-        await createChambre(form);
+        await createChambre(form.serviceId, {
+            numero: form.numero, type: form.type, capacite: form.capacite,
+            designation: form.description || undefined,
+          });
       }
       onSaved();
     } catch (e: any) {
@@ -365,16 +377,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
               </>
             )}
 
-            {/* ────── Description ────── */}
-            <div style={{ marginTop: 24 }}>
-              <label style={label}>Description (optionnel)</label>
-              <textarea
-                style={{ ...fieldBase, resize: 'vertical', minHeight: 84, lineHeight: 1.6 }}
-                value={form.description}
-                placeholder="Notes, particularités..."
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              />
-            </div>
+           
           </div>
 
           {/* ── Footer ── */}
