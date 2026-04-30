@@ -49,14 +49,9 @@ export default function LoginPage() {
 
             {/* Logo */}
             <div className="login-logo d-flex align-items-center gap-3">
-              <div className="login-logo__mark">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                </svg>
-              </div>
+              <img src="/chuMel-logo.png" alt="CHU-MEL" style={{ height: 52, width: 'auto' }} />
               <div>
-                <div className="login-logo__name">HôpitalGH</div>
+                <div className="login-logo__name">CHU-MEL</div>
                 <div className="login-logo__tag">Système de gestion hospitalière intégré</div>
               </div>
             </div>
@@ -228,13 +223,8 @@ export default function LoginPage() {
 
               {/* En-tête mobile : logo visible seulement sur petit écran */}
               <div className="d-flex align-items-center gap-3 mb-4 d-lg-none">
-                <div className="login-logo__mark">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                  </svg>
-                </div>
-                <div className="login-logo__name" style={{ color: '#1355a8' }}>HôpitalGH</div>
+                <img src="/chuMel-logo.png" alt="CHU-MEL" style={{ height: 36, width: 'auto' }} />
+                <div className="login-logo__name" style={{ color: '#1355a8' }}>CHU-MEL</div>
               </div>
 
               <div className="mb-4">
@@ -323,7 +313,7 @@ export default function LoginPage() {
 
             {/* Copyright */}
             <p className="login-copy">
-              &copy; 2026 HôpitalGH &nbsp;&middot;&nbsp; Tous droits réservés
+              &copy; 2026 CHU-MEL &nbsp;&middot;&nbsp; Tous droits réservés
             </p>
           </Col>
 
