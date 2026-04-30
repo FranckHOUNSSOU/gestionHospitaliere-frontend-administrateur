@@ -38,12 +38,12 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
           } label ="Comptes utilisateurs" count="" countCls="adm-nb-blue" fontSize={13}/>
-        </div>  
+        </div>
       <Item to="/admin/GestionChambres" minimized={minimized} icon={
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
-      }label="Gestion des Chambres" fontSize={13}/>
+      } label="Gestion des Chambres" fontSize={13}/>
 
       <div className="adm-nav-sec">Sécurité</div>
       <Item to="/admin/logs" minimized={minimized} icon={
@@ -52,6 +52,11 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
           <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
         </svg>
       } label="Journaux d'activité" count="" countCls="adm-nb-red" fontSize={13} />
+      <Item to="/admin/security" minimized={minimized} icon={
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      } label="Sécurité plateforme" fontSize={13} />
       <Item to="/admin/attempts" minimized={minimized} icon={
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -65,6 +70,12 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
       } label="Paramètres généraux" fontSize={13} />
+      <Item to="/admin/backups" minimized={minimized} icon={
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      } label="Sauvegardes" count="" countCls="adm-nb-green" fontSize={13} />
       <Item to="/admin/stats" minimized={minimized} icon={
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
@@ -72,7 +83,7 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
         </svg>
       } label="Rapports & statistiques" fontSize={13} />
 
-      
+
     </div>
   );
 };
