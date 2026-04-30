@@ -24,6 +24,7 @@ import PatientList from './pages/agent/patients/PatientList';
 import { AgentRLayout } from './components/agentR/layout/agentRLayout';
 import AccueilPatient from './pages/agentR/AccueilPatient';
 import RechercheDossier from './pages/agentR/RechercheDossier';
+import GestionChambres from './pages/admin/GestionChambres';
 
 const UserListPage = lazy(() => import('./pages/admin/users'));
 
@@ -45,6 +46,8 @@ function App() {
               }
             >
               <Route index element={<Dashboard />} />
+              <Route path="Dashboard" element={<Dashboard />} />
+              <Route path="GestionChambres" element={<GestionChambres />} />
               <Route path="users" element={
                 <Suspense fallback={<div>Chargement…</div>}>
                   <UserListPage />
