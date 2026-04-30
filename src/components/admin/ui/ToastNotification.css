@@ -1,0 +1,172 @@
+/* ─────────────────────────────────────────
+   ToastNotification.css
+   Importer dans ToastNotification.tsx :
+     import './ToastNotification.css';
+───────────────────────────────────────── */
+
+/* ── POSITION : coin haut droite, au-dessus de tout ── */
+.toast-notif {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 300px;
+  max-width: 420px;
+  padding: 14px 14px 14px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  overflow: hidden;
+}
+
+/* ── VARIANTES ── */
+.toast-notif--success {
+  background: #ffffff;
+  border: 1px solid #c3e6d0;
+  color: #0a5c35;
+}
+
+.toast-notif--success .toast-notif__icon {
+  color: #0a7a4c;
+  background: #e5f5ee;
+}
+
+.toast-notif--success .toast-notif__progress {
+  background: #0a7a4c;
+}
+
+.toast-notif--error {
+  background: #ffffff;
+  border: 1px solid #f5c6c6;
+  color: #7c1d1d;
+}
+
+.toast-notif--error .toast-notif__icon {
+  color: #b91c1c;
+  background: #fde8e8;
+}
+
+.toast-notif--error .toast-notif__progress {
+  background: #b91c1c;
+}
+
+.toast-notif--info {
+  background: #ffffff;
+  border: 1px solid #b5d4f4;
+  color: #0c447c;
+}
+
+.toast-notif--info .toast-notif__icon {
+  color: #1355a8;
+  background: #e8f1fb;
+}
+
+.toast-notif--info .toast-notif__progress {
+  background: #1355a8;
+}
+
+/* ── ICÔNE ── */
+.toast-notif__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── MESSAGE ── */
+.toast-notif__message {
+  flex: 1;
+  line-height: 1.45;
+  color: inherit;
+}
+
+/* ── BOUTON FERMER ── */
+.toast-notif__close {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.5;
+  flex-shrink: 0;
+  padding: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.toast-notif__close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── BARRE DE PROGRESSION ── */
+.toast-notif__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 0 0 0 10px;
+  animation: toast-progress linear forwards;
+  transform-origin: left;
+}
+
+@keyframes toast-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ── ANIMATIONS ENTRÉE / SORTIE ── */
+.toast-notif--entering {
+  animation: toast-enter 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.toast-notif--leaving {
+  animation: toast-leave 0.28s ease-in forwards;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 575.98px) {
+  .toast-notif {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: 100%;
+    min-width: unset;
+  }
+}

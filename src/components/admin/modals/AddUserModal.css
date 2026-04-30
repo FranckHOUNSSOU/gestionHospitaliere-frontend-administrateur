@@ -1,0 +1,342 @@
+/* ─────────────────────────────────────────
+   RegisterModal.css
+   Importer dans RegisterModal.tsx :
+     import './RegisterModal.css';
+───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── BACKDROP FLOUTÉ ── */
+.register-modal.modal .modal-backdrop,
+.modal-backdrop {
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  background-color: rgba(15, 30, 60, 0.55) !important;
+}
+
+/* ── CONTENEUR MODAL ── */
+.register-modal .modal-dialog {
+  max-width: 640px;
+}
+
+.register-modal .modal-content {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+.register-modal__header {
+  background: #ffffff;
+  border-bottom: 1px solid #edf0f5;
+  padding: 20px 28px 16px;
+}
+
+.register-modal__title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #1a2336;
+  letter-spacing: -0.3px;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.register-modal .btn-close {
+  opacity: 0.4;
+}
+.register-modal .btn-close:hover {
+  opacity: 0.7;
+}
+
+/* ── BODY ── */
+.register-modal__body {
+  background: #ffffff;
+  padding: 20px 28px 28px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar discrète */
+.register-modal__body::-webkit-scrollbar {
+  width: 4px;
+}
+.register-modal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.register-modal__body::-webkit-scrollbar-thumb {
+  background: #dde3ed;
+  border-radius: 2px;
+}
+
+/* ── SOUS-TITRE ── */
+.register-modal__subtitle {
+  font-size: 13px;
+  color: #5a6a85;
+  margin-bottom: 20px;
+  line-height: 1.55;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── ALERTE ERREUR ── */
+.register-modal__alert {
+  font-size: 12.5px;
+  border-radius: 8px;
+  border: none;
+  background-color: #fde8e8;
+  color: #b91c1c;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+/* ── SÉPARATEURS DE SECTION ── */
+.register-modal__section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #9aaabb;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  margin: 4px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.register-modal__section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #edf0f5;
+}
+
+/* ── LABELS ── */
+.register-modal__label {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #1a2336 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px !important;
+  display: block;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* ── INPUT AVEC ICÔNE ── */
+.register-modal__input-wrap {
+  position: relative;
+}
+
+.register-modal__input-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9aaabb;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.register-modal__input {
+  height: 42px !important;
+  border: 1.5px solid #dde3ed !important;
+  border-radius: 9px !important;
+  padding-left: 40px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  color: #1a2336 !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  background-color: #ffffff !important;
+}
+
+.register-modal__input:focus {
+  border-color: #1355a8 !important;
+  box-shadow: 0 0 0 3px rgba(19, 85, 168, 0.07) !important;
+  outline: none !important;
+}
+
+.register-modal__input::placeholder {
+  color: #b8c4d4 !important;
+}
+
+/* ── SELECT ── */
+.register-modal__select {
+  height: 42px !important;
+  border: 1.5px solid #dde3ed !important;
+  border-radius: 9px !important;
+  padding: 0 14px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  color: #1a2336 !important;
+  box-shadow: none !important;
+  background-color: #ffffff !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.register-modal__select:focus {
+  border-color: #1355a8 !important;
+  box-shadow: 0 0 0 3px rgba(19, 85, 168, 0.07) !important;
+  outline: none !important;
+}
+
+/* option vide grisée */
+.register-modal__select option:first-child {
+  color: #b8c4d4;
+}
+
+/* ── HINT ── */
+.register-modal__hint {
+  font-size: 11px !important;
+  color: #9aaabb !important;
+  margin-top: 4px !important;
+  display: block;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* ── CHECKBOX CGU ── */
+.register-modal__check .form-check-input {
+  width: 15px;
+  height: 15px;
+  accent-color: #1355a8;
+  cursor: pointer;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.register-modal__check-label {
+  font-size: 12.5px;
+  color: #5a6a85;
+  line-height: 1.55;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.register-modal__link {
+  color: #1355a8;
+  text-decoration: none;
+  font-weight: 500;
+}
+.register-modal__link:hover {
+  text-decoration: underline;
+  color: #0f449a;
+}
+
+/* ── FOOTER DES BOUTONS ── */
+.register-modal__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* Bouton annuler */
+.register-modal__btn-cancel {
+  height: 42px !important;
+  padding: 0 20px !important;
+  border-radius: 9px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #5a6a85 !important;
+  border: 1.5px solid #dde3ed !important;
+  background: #ffffff !important;
+  transition: all 0.15s ease !important;
+}
+.register-modal__btn-cancel:hover {
+  border-color: #9aaabb !important;
+  color: #1a2336 !important;
+}
+
+/* Bouton soumettre */
+.register-modal__btn-primary {
+  height: 42px !important;
+  padding: 0 24px !important;
+  background: #1355a8 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 9px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+  box-shadow: none !important;
+}
+.register-modal__btn-primary:hover:not(:disabled) {
+  background: #0f449a !important;
+}
+.register-modal__btn-primary:disabled {
+  background: #7a9fd4 !important;
+  cursor: not-allowed !important;
+}
+.register-modal__btn-primary:focus,
+.register-modal__btn-primary:active {
+  box-shadow: 0 0 0 3px rgba(19, 85, 168, 0.2) !important;
+}
+
+/* ── ÉCRAN DE SUCCÈS ── */
+.register-modal__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.register-modal__success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #e5f5ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.register-modal__success-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a2336;
+  margin-bottom: 10px;
+  font-family: 'Inter', sans-serif;
+}
+
+.register-modal__success-text {
+  font-size: 13px;
+  color: #5a6a85;
+  line-height: 1.6;
+  max-width: 400px;
+  margin-bottom: 24px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 575.98px) {
+  .register-modal .modal-dialog {
+    max-width: 100%;
+    margin: 12px;
+  }
+
+  .register-modal__header {
+    padding: 16px 20px 12px;
+  }
+
+  .register-modal__body {
+    padding: 16px 20px 24px;
+    max-height: 80vh;
+  }
+
+  .register-modal__title {
+    font-size: 17px !important;
+  }
+
+  .register-modal__footer {
+    flex-direction: column-reverse;
+  }
+
+  .register-modal__btn-cancel,
+  .register-modal__btn-primary {
+    width: 100% !important;
+    justify-content: center;
+  }
+}
