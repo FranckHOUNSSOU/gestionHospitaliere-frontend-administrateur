@@ -27,6 +27,7 @@ import RechercheDossier from './pages/agentR/RechercheDossier';
 import ProfilPage from './pages/admin/ProfilPage';
 import ConfidentialitePage from './pages/admin/ConfidentialitePage';
 import NotificationsPage from './pages/admin/NotificationsPage';
+import GestionChambres from './pages/admin/GestionChambres';
 
 const UserListPage = lazy(() => import('./pages/admin/users'));
 
@@ -48,6 +49,8 @@ function App() {
               }
             >
               <Route index element={<Dashboard />} />
+              <Route path="Dashboard" element={<Dashboard />} />
+              <Route path="GestionChambres" element={<GestionChambres />} />
               <Route path="users" element={
                 <Suspense fallback={<div>Chargement…</div>}>
                   <UserListPage />
