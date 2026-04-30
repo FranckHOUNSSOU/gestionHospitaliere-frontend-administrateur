@@ -24,6 +24,9 @@ import PatientList from './pages/agent/patients/PatientList';
 import { AgentRLayout } from './components/agentR/layout/agentRLayout';
 import AccueilPatient from './pages/agentR/AccueilPatient';
 import RechercheDossier from './pages/agentR/RechercheDossier';
+import ProfilPage from './pages/admin/ProfilPage';
+import ConfidentialitePage from './pages/admin/ConfidentialitePage';
+import NotificationsPage from './pages/admin/NotificationsPage';
 import GestionChambres from './pages/admin/GestionChambres';
 
 const UserListPage = lazy(() => import('./pages/admin/users'));
@@ -53,6 +56,9 @@ function App() {
                   <UserListPage />
                 </Suspense>
               } />
+              <Route path="profil"          element={<ProfilPage />}          />
+              <Route path="confidentialite" element={<ConfidentialitePage />} />
+              <Route path="notifications"   element={<NotificationsPage />}   />
             </Route>
 
             {/* ── AGENT ADMINISTRATIF ──────────────────── */}

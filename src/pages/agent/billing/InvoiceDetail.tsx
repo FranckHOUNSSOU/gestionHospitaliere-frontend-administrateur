@@ -35,7 +35,7 @@ export default function InvoiceDetail() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                 <Receipt size={18} />
-                <span style={{ fontWeight: 700, fontSize: '15px' }}>HôpitalGH</span>
+                <span style={{ fontWeight: 700, fontSize: '15px' }}>CHU-MEL</span>
               </div>
               <p style={{ fontSize: '12px', opacity: 0.8, margin: 0 }}>Système de gestion hospitalière</p>
             </div>

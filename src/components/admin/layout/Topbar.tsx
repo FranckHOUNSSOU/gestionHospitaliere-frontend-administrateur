@@ -17,17 +17,8 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
     <div className="adm-topbar">
       <div className="adm-topbar-l">
       <div className="adm-logo">
-        <div className="adm-logo-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24"
-            fill="none" stroke="#fff" strokeWidth="2.2"
-            strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
-        </div>
-        <span className="adm-logo-name">
-          Hôpital<em>GH</em>
-
-        </span>
+        <img src="/chuMel-logo.png" alt="CHU-MEL" style={{ height: 36, width: 'auto' }} />
+        <span className="adm-logo-name">CHU-MEL</span>
       </div>
 
       <button
