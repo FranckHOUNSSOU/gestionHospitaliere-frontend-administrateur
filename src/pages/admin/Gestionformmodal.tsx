@@ -3,92 +3,66 @@ import {
   createChambre,
   updateChambre,
   getServices,
-  TypeChambre,
-  StatutChambre,
-  TYPE_CHAMBRE_LABELS,
-  STATUT_CHAMBRE_LABELS,
+  poleLabel,
 } from '../../services/chambres';
 import type {
   Chambre,
   Pole,
   ServiceHospitalier,
+  CreateChambreDto,
+  UpdateChambreDto,
 } from '../../services/chambres';
 
 interface ChambreFormState {
-  numero: string;
-  type: TypeChambre;
-  capacite: number;
-  description: string;
-  serviceId: string;
+  numero:      string;
+  designation: string;
+  etage:       string;
+  serviceId:   string;
 }
 
 interface ChambreFormModalProps {
   chambre?: Chambre | null;
-  poles: Pole[];
-  onClose: () => void;
-  onSaved: () => void;
+  poles:    Pole[];
+  onClose:  () => void;
+  onSaved:  () => void;
 }
-
-// ─── Logique capacité par type de chambre ─────────────────────────────────────
-
-/**
- * Certains types de chambre ont une capacité fixe et logique :
- *  - Individuelle  → 1 lit  (par définition : une personne seule)
- *  - Double        → 2 lits (par définition : deux personnes)
- *  - Suite privée  → 1 lit  (chambre haut de gamme, mais individuelle)
- *  - Commune       → libre, min 3  (grande salle partagée)
- *  - Soins intensifs → libre, min 1 (variable selon configuration)
- */
-const CAPACITE_FIXE: Partial<Record<TypeChambre, number>> = {
-  [TypeChambre.INDIVIDUELLE]: 1,
-  [TypeChambre.DOUBLE]:       2,
-  [TypeChambre.SUITE_PRIVEE]: 1,
-};
-
-const CAPACITE_MIN: Record<TypeChambre, number> = {
-  [TypeChambre.INDIVIDUELLE]:    1,
-  [TypeChambre.DOUBLE]:          2,
-  [TypeChambre.COMMUNE]:         3,
-  [TypeChambre.SOINS_INTENSIFS]: 1,
-  [TypeChambre.SUITE_PRIVEE]:    1,
-};
-
-const CAPACITE_INFO: Partial<Record<TypeChambre, string>> = {
-  [TypeChambre.INDIVIDUELLE]:    'Une chambre individuelle accueille toujours 1 patient.',
-  [TypeChambre.DOUBLE]:          'Une chambre double accueille exactement 2 patients.',
-  [TypeChambre.SUITE_PRIVEE]:    'Une suite privée est réservée à 1 seul patient.',
-  [TypeChambre.COMMUNE]:         'Salle commune — minimum 3 lits.',
-  [TypeChambre.SOINS_INTENSIFS]: 'En soins intensifs, chaque lit est un poste de surveillance.',
-};
-
-const FORM_INITIAL: ChambreFormState = {
-  numero: '', type: TypeChambre.INDIVIDUELLE, capacite: 1, description: '', serviceId: '',
-};
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const label: React.CSSProperties = {
-  display: 'block', fontSize: 11, fontWeight: 700, color: '#6B7280',
-  letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6,
-};
+const S = {
+  label: {
+    display: 'block', fontSize: 11, fontWeight: 700, color: '#6B7280',
+    letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 6,
+  } as React.CSSProperties,
 
-const sectionTitle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: '#0369A1',
-  letterSpacing: '0.09em', textTransform: 'uppercase',
-  borderBottom: '1.5px solid #E5E7EB', paddingBottom: 9, marginBottom: 18,
-};
+  sectionTitle: {
+    fontSize: 11, fontWeight: 700, color: '#0369A1',
+    letterSpacing: '0.09em', textTransform: 'uppercase',
+    borderBottom: '1.5px solid #E5E7EB', paddingBottom: 9, marginBottom: 18,
+  } as React.CSSProperties,
 
-const fieldBase: React.CSSProperties = {
-  width: '100%', padding: '10px 12px', border: '1.5px solid #E5E7EB',
-  borderRadius: 8, fontSize: 14, color: '#111827', background: '#fff',
-  outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
-};
+  field: {
+    width: '100%', padding: '10px 12px 10px 36px',
+    border: '1.5px solid #E5E7EB', borderRadius: 8,
+    fontSize: 14, color: '#111827', background: '#fff',
+    outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+  } as React.CSSProperties,
 
-const fieldWithIcon: React.CSSProperties = { ...fieldBase, paddingLeft: 36 };
+  fieldPlain: {
+    width: '100%', padding: '10px 12px',
+    border: '1.5px solid #E5E7EB', borderRadius: 8,
+    fontSize: 14, color: '#111827', background: '#fff',
+    outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+  } as React.CSSProperties,
 
-const iconPos: React.CSSProperties = {
-  position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)',
-  color: '#9CA3AF', fontSize: 14, pointerEvents: 'none', lineHeight: 1,
+  fieldDisabled: {
+    opacity: 0.5, cursor: 'not-allowed', background: '#F9FAFB',
+  } as React.CSSProperties,
+
+  icon: {
+    position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)',
+    color: '#9CA3AF', fontSize: 14, pointerEvents: 'none', lineHeight: 1,
+  } as React.CSSProperties,
 };
 
 // ─── Composant ────────────────────────────────────────────────────────────────
@@ -99,35 +73,27 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
   const [form, setForm] = useState<ChambreFormState>(
     chambre
       ? {
-          numero: chambre.numero, type: chambre.type,
-          capacite: chambre.capacite, description: chambre.designation ?? '',
-          serviceId: chambre.service.id,
+          numero:      chambre.numero,
+          designation: chambre.designation ?? '',
+          etage:       chambre.etage ?? '',
+          serviceId:   chambre.service.id,
         }
-      : FORM_INITIAL
+      : { numero: '', designation: '', etage: '', serviceId: '' }
   );
-  const [statut, setStatut]               = useState<StatutChambre>(chambre?.statut ?? StatutChambre.DISPONIBLE);
+  const [estActive, setEstActive]           = useState<boolean>(chambre?.estActive ?? true);
   const [selectedPoleId, setSelectedPoleId] = useState<string>(chambre?.service.pole.id ?? '');
-  const [services, setServices]           = useState<ServiceHospitalier[]>([]);
-  const [loading, setLoading]             = useState(false);
-  const [error, setError]                 = useState('');
-
-  // Quand le type change → on applique la capacité fixe si applicable
-  useEffect(() => {
-    const fixe = CAPACITE_FIXE[form.type];
-    if (fixe !== undefined) {
-      setForm((f) => ({ ...f, capacite: fixe }));
-    } else {
-      // Si on passe à Commune ou Soins intensifs, on s'assure que le min est respecté
-      setForm((f) => ({
-        ...f,
-        capacite: Math.max(f.capacite, CAPACITE_MIN[form.type]),
-      }));
-    }
-  }, [form.type]);
+  const [services, setServices]             = useState<ServiceHospitalier[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+  const [saving, setSaving]                 = useState(false);
+  const [error, setError]                   = useState('');
 
   useEffect(() => {
     if (!selectedPoleId) { setServices([]); return; }
-    getServices(selectedPoleId).then(setServices).catch(() => setServices([]));
+    setLoadingServices(true);
+    getServices(selectedPoleId)
+      .then(setServices)
+      .catch(() => setServices([]))
+      .finally(() => setLoadingServices(false));
   }, [selectedPoleId]);
 
   const handlePoleChange = (poleId: string) => {
@@ -135,43 +101,51 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
     setForm((f) => ({ ...f, serviceId: '' }));
   };
 
+  const set = (k: keyof ChambreFormState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
+
   const handleSubmit = async () => {
-    if (!form.numero.trim()) { setError('Le numéro de chambre est obligatoire.'); return; }
-    if (!form.serviceId)     { setError('Veuillez sélectionner un service.');      return; }
-    setLoading(true); setError('');
+    setError('');
+    if (!form.numero.trim())  { setError('Le numéro de chambre est obligatoire.'); return; }
+    if (form.numero.trim().length > 20) { setError('Le numéro ne doit pas dépasser 20 caractères.'); return; }
+    if (!form.serviceId)      { setError('Veuillez sélectionner un service.'); return; }
+
+    setSaving(true);
     try {
+      const dto: CreateChambreDto = {
+        numero:      form.numero.trim(),
+        ...(form.designation.trim() && { designation: form.designation.trim() }),
+        ...(form.etage.trim()       && { etage: form.etage.trim() }),
+      };
+
       if (isEdit && chambre) {
-        await updateChambre(chambre.id, {
-            numero: form.numero, type: form.type, capacite: form.capacite,
-            designation: form.description || undefined, statut,
-          });
+        const updateDto: UpdateChambreDto = { ...dto, estActive };
+        await updateChambre(chambre.id, updateDto);
       } else {
-        await createChambre(form.serviceId, {
-            numero: form.numero, type: form.type, capacite: form.capacite,
-            designation: form.description || undefined,
-          });
+        await createChambre(form.serviceId, dto);
       }
       onSaved();
-    } catch (e: any) {
-      const msg = e?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg[0] : msg ?? 'Une erreur est survenue.');
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string | string[] } } })
+        ?.response?.data?.message;
+      setError(Array.isArray(msg) ? msg[0] : (msg ?? 'Une erreur est survenue.'));
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const capaciteFixe  = CAPACITE_FIXE[form.type] !== undefined;
-  const capaciteInfo  = CAPACITE_INFO[form.type];
+  const serviceDisabled = !selectedPoleId || loadingServices;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 1050 }}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 1050 }}
         onClick={onClose}
       />
 
-      {/* Conteneur centré */}
+      {/* Centrage */}
       <div
         style={{
           position: 'fixed', inset: 0, zIndex: 1055,
@@ -180,27 +154,36 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div style={{
-          background: '#fff', borderRadius: 12, width: '100%', maxWidth: 600,
+          background: '#fff', borderRadius: 14, width: '100%', maxWidth: 580,
           maxHeight: '92vh', display: 'flex', flexDirection: 'column',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
         }}>
 
           {/* ── Header ── */}
           <div style={{
-            padding: '24px 28px',
+            padding: '22px 28px 18px',
             borderBottom: '1px solid #F1F5F9',
             display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
             flexShrink: 0,
           }}>
-            <div>
-              <h5 style={{ margin: 0, fontWeight: 700, fontSize: 20, color: '#111827', lineHeight: 1.3 }}>
-                {isEdit ? 'Modifier la chambre' : 'Créer une chambre'}
-              </h5>
-              <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6B7280' }}>
-                {isEdit
-                  ? `Modifiez les informations de la chambre ${chambre!.numero}.`
-                  : 'Remplissez les informations pour ajouter une nouvelle chambre.'}
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10,
+                background: 'linear-gradient(135deg,#0EA5E9,#0369A1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <i className="bi bi-door-open" style={{ fontSize: 18, color: '#fff' }} />
+              </div>
+              <div>
+                <h5 style={{ margin: 0, fontWeight: 700, fontSize: 18, color: '#0F172A', lineHeight: 1.2 }}>
+                  {isEdit ? 'Modifier la chambre' : 'Nouvelle chambre'}
+                </h5>
+                <p style={{ margin: '3px 0 0', fontSize: 13, color: '#64748B' }}>
+                  {isEdit
+                    ? `Modifiez les informations de la chambre ${chambre!.numero}`
+                    : 'Renseignez les informations pour créer une chambre'}
+                </p>
+              </div>
             </div>
             <button
               onClick={onClose}
@@ -217,6 +200,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
           {/* ── Body ── */}
           <div style={{ padding: '24px 28px', overflowY: 'auto', flex: 1 }}>
 
+            {/* Erreur */}
             {error && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20,
@@ -229,162 +213,208 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
               </div>
             )}
 
-            {/* ────── IDENTIFICATION ────── */}
-            <p style={sectionTitle}>Identification</p>
+            {/* ── IDENTIFICATION ── */}
+            <p style={S.sectionTitle}>
+              <i className="bi bi-tag me-1" />
+              Identification
+            </p>
 
-            <div className="row g-3" style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 28 }}>
 
               {/* Numéro */}
-              <div className="col-7">
-                <label style={label}>
+              <div>
+                <label style={S.label}>
                   Numéro de chambre <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <i className="bi bi-hash" style={iconPos} />
+                  <i className="bi bi-hash" style={S.icon} />
                   <input
-                    style={fieldWithIcon}
+                    style={S.field}
                     value={form.numero}
+                    maxLength={20}
                     placeholder="ex : CH-101"
-                    onChange={(e) => setForm((f) => ({ ...f, numero: e.target.value }))}
+                    onChange={set('numero')}
                   />
                 </div>
+                <p style={{ margin: '4px 0 0', fontSize: 11, color: '#9CA3AF' }}>
+                  20 caractères maximum
+                </p>
               </div>
 
-              {/* Capacité */}
-              <div className="col-5">
-                <label style={label}>
-                  Capacité (lits) <span style={{ color: '#EF4444' }}>*</span>
-                </label>
+              {/* Désignation */}
+              <div>
+                <label style={S.label}>Désignation</label>
                 <div style={{ position: 'relative' }}>
-                  <i className="bi bi-person" style={iconPos} />
+                  <i className="bi bi-card-text" style={S.icon} />
                   <input
-                    style={{
-                      ...fieldWithIcon,
-                      background: capaciteFixe ? '#F9FAFB' : '#fff',
-                      color: capaciteFixe ? '#6B7280' : '#111827',
-                      cursor: capaciteFixe ? 'not-allowed' : 'text',
-                    }}
-                    type="number"
-                    min={CAPACITE_MIN[form.type]}
-                    max={20}
-                    value={form.capacite}
-                    disabled={capaciteFixe}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, capacite: Math.max(CAPACITE_MIN[f.type], +e.target.value) }))
-                    }
+                    style={S.field}
+                    value={form.designation}
+                    maxLength={100}
+                    placeholder="ex : Chambre de soins intensifs"
+                    onChange={set('designation')}
                   />
                 </div>
-                {/* Info contextuelle */}
-                {capaciteInfo && (
-                  <p style={{
-                    margin: '5px 0 0', fontSize: 11, color: capaciteFixe ? '#0369A1' : '#6B7280',
-                    display: 'flex', alignItems: 'flex-start', gap: 4, lineHeight: 1.4,
-                  }}>
-                    <i className={`bi ${capaciteFixe ? 'bi-lock-fill' : 'bi-info-circle'}`}
-                       style={{ fontSize: 10, marginTop: 2, flexShrink: 0 }} />
-                    {capaciteInfo}
-                  </p>
-                )}
+                <p style={{ margin: '4px 0 0', fontSize: 11, color: '#9CA3AF' }}>
+                  Description courte de la chambre (optionnel)
+                </p>
               </div>
 
-              {/* Type de chambre */}
-              <div className="col-12">
-                <label style={label}>
-                  Type de chambre <span style={{ color: '#EF4444' }}>*</span>
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <i className="bi bi-tag" style={iconPos} />
-                  <select
-                    style={fieldWithIcon}
-                    value={form.type}
-                    onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as TypeChambre }))}
-                  >
-                    {Object.values(TypeChambre).map((t) => (
-                      <option key={t} value={t}>{TYPE_CHAMBRE_LABELS[t]}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
             </div>
 
-            {/* ────── LOCALISATION ────── */}
-            <p style={sectionTitle}>Localisation</p>
+            {/* ── LOCALISATION ── */}
+            <p style={S.sectionTitle}>
+              <i className="bi bi-geo-alt me-1" />
+              Localisation
+            </p>
 
-            <div className="row g-3" style={{ marginBottom: isEdit ? 24 : 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: isEdit ? 28 : 0 }}>
+
+              {/* Étage */}
+              <div>
+                <label style={S.label}>Étage</label>
+                <div style={{ position: 'relative' }}>
+                  <i className="bi bi-layers" style={S.icon} />
+                  <input
+                    style={S.field}
+                    value={form.etage}
+                    maxLength={20}
+                    placeholder="ex : 2ème étage, RDC, Sous-sol"
+                    onChange={set('etage')}
+                  />
+                </div>
+              </div>
+
               {/* Pôle */}
-              <div className="col-12">
-                <label style={label}>
-                  Pôle <span style={{ color: '#EF4444' }}>*</span>
+              <div>
+                <label style={S.label}>
+                  Pôle hospitalier <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <i className="bi bi-building" style={iconPos} />
+                  <i className="bi bi-building" style={S.icon} />
                   <select
-                    style={fieldWithIcon}
+                    style={S.field}
                     value={selectedPoleId}
                     onChange={(e) => handlePoleChange(e.target.value)}
                   >
                     <option value="">— Sélectionner un pôle —</option>
-                    {poles.map((p) => <option key={p.id} value={p.id}>{p.nom}</option>)}
+                    {poles.map((p) => (
+                      <option key={p.id} value={p.id}>{poleLabel(p.nom)}</option>
+                    ))}
                   </select>
                 </div>
+                {poles.length === 0 && (
+                  <p style={{ margin: '4px 0 0', fontSize: 11, color: '#F59E0B' }}>
+                    <i className="bi bi-exclamation-triangle me-1" />
+                    Aucun pôle disponible — créez d'abord un pôle.
+                  </p>
+                )}
               </div>
 
               {/* Service */}
-              <div className="col-12">
-                <label style={label}>
+              <div>
+                <label style={S.label}>
                   Service <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <i className="bi bi-diagram-3" style={iconPos} />
+                  <i className="bi bi-diagram-3" style={{
+                    ...S.icon,
+                    color: serviceDisabled ? '#D1D5DB' : '#9CA3AF',
+                  }} />
                   <select
                     style={{
-                      ...fieldWithIcon,
-                      opacity: !selectedPoleId ? 0.5 : 1,
-                      cursor: !selectedPoleId ? 'not-allowed' : 'pointer',
+                      ...S.field,
+                      ...(serviceDisabled ? S.fieldDisabled : {}),
                     }}
                     value={form.serviceId}
-                    disabled={!selectedPoleId}
-                    onChange={(e) => setForm((f) => ({ ...f, serviceId: e.target.value }))}
+                    disabled={serviceDisabled}
+                    onChange={set('serviceId')}
                   >
-                    <option value="">— Sélectionner un service —</option>
-                    {services.map((s) => <option key={s.id} value={s.id}>{s.nom}</option>)}
+                    <option value="">
+                      {loadingServices
+                        ? 'Chargement...'
+                        : !selectedPoleId
+                          ? '— Sélectionnez d\'abord un pôle —'
+                          : services.length === 0
+                            ? '— Aucun service dans ce pôle —'
+                            : '— Sélectionner un service —'}
+                    </option>
+                    {services.map((s) => (
+                      <option key={s.id} value={s.id}>{s.nom}</option>
+                    ))}
                   </select>
                 </div>
+                {selectedPoleId && !loadingServices && services.length === 0 && (
+                  <p style={{ margin: '4px 0 0', fontSize: 11, color: '#F59E0B' }}>
+                    <i className="bi bi-exclamation-triangle me-1" />
+                    Aucun service trouvé pour ce pôle.
+                  </p>
+                )}
+                {!selectedPoleId && (
+                  <p style={{ margin: '4px 0 0', fontSize: 11, color: '#9CA3AF' }}>
+                    <i className="bi bi-info-circle me-1" />
+                    Sélectionnez un pôle pour voir les services disponibles.
+                  </p>
+                )}
               </div>
+
             </div>
 
-            {/* ────── STATUT (modification uniquement) ────── */}
+            {/* ── STATUT (modification uniquement) ── */}
             {isEdit && (
               <>
-                <p style={sectionTitle}>Statut</p>
-                <div className="row g-3" style={{ marginBottom: 0 }}>
-                  <div className="col-12">
-                    <label style={label}>Statut de la chambre</label>
-                    <div style={{ position: 'relative' }}>
-                      <i className="bi bi-circle-half" style={iconPos} />
-                      <select
-                        style={fieldWithIcon}
-                        value={statut}
-                        onChange={(e) => setStatut(e.target.value as StatutChambre)}
-                      >
-                        {Object.values(StatutChambre).map((s) => (
-                          <option key={s} value={s}>{STATUT_CHAMBRE_LABELS[s]}</option>
-                        ))}
-                      </select>
-                    </div>
+                <p style={S.sectionTitle}>
+                  <i className="bi bi-toggle-on me-1" />
+                  Statut
+                </p>
+
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 16px',
+                  background: estActive ? '#F0FDF4' : '#FEF2F2',
+                  border: `1.5px solid ${estActive ? '#BBF7D0' : '#FECACA'}`,
+                  borderRadius: 10, transition: 'all .2s',
+                }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 600, fontSize: 13, color: estActive ? '#166534' : '#991B1B' }}>
+                      {estActive ? 'Chambre active' : 'Chambre inactive'}
+                    </p>
+                    <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6B7280' }}>
+                      {estActive
+                        ? 'La chambre est opérationnelle et visible dans le système'
+                        : 'La chambre est désactivée et masquée des listes opérationnelles'}
+                    </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setEstActive((v) => !v)}
+                    style={{
+                      position: 'relative', width: 48, height: 26,
+                      borderRadius: 13, border: 'none', cursor: 'pointer',
+                      background: estActive ? '#22C55E' : '#D1D5DB',
+                      transition: 'background .2s', flexShrink: 0, marginLeft: 16,
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute', top: 3,
+                      left: estActive ? 25 : 3,
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: '#fff',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                      transition: 'left .2s',
+                    }} />
+                  </button>
                 </div>
               </>
             )}
 
-           
           </div>
 
           {/* ── Footer ── */}
           <div style={{
-            padding: '16px 28px', borderTop: '1px solid #F1F5F9',
+            padding: '16px 28px',
+            borderTop: '1px solid #F1F5F9',
             display: 'flex', justifyContent: 'flex-end', gap: 10,
-            background: '#FAFAFA', borderRadius: '0 0 12px 12px', flexShrink: 0,
+            background: '#FAFAFA', borderRadius: '0 0 14px 14px', flexShrink: 0,
           }}>
             <button
               onClick={onClose}
@@ -398,18 +428,27 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
             </button>
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={saving}
               style={{
                 padding: '9px 24px', borderRadius: 8, border: 'none',
-                background: loading ? '#7DD3FC' : '#0EA5E9',
+                background: saving ? '#7DD3FC' : '#0EA5E9',
                 color: '#fff', fontWeight: 700, fontSize: 14,
-                cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
                 display: 'flex', alignItems: 'center', gap: 8,
+                transition: 'background .15s',
               }}
             >
-              {loading ? (
-                <><span className="spinner-border spinner-border-sm" style={{ width: 14, height: 14 }} /> Enregistrement...</>
-              ) : isEdit ? 'Mettre à jour' : 'Créer la chambre'}
+              {saving ? (
+                <>
+                  <span className="spinner-border spinner-border-sm"
+                    style={{ width: 14, height: 14, borderWidth: 2 }} />
+                  Enregistrement...
+                </>
+              ) : isEdit ? (
+                <><i className="bi bi-check2" /> Mettre à jour</>
+              ) : (
+                <><i className="bi bi-plus-lg" /> Créer la chambre</>
+              )}
             </button>
           </div>
 

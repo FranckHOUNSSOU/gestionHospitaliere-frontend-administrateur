@@ -1,40 +1,14 @@
 import client from './clients';
 
-// ─── Enums ────────────────────────────────────────────────────────────────────
+// ─── Labels pôles (noms enum → libellés lisibles) ─────────────────────────────
 
-export const TypeChambre = {
-  INDIVIDUELLE:    'INDIVIDUELLE',
-  DOUBLE:          'DOUBLE',
-  COMMUNE:         'COMMUNE',
-  SOINS_INTENSIFS: 'SOINS_INTENSIFS',
-  SUITE_PRIVEE:    'SUITE_PRIVEE',
-} as const;
-export type TypeChambre = (typeof TypeChambre)[keyof typeof TypeChambre];
-
-export const StatutChambre = {
-  DISPONIBLE:     'DISPONIBLE',
-  OCCUPEE:        'OCCUPEE',
-  EN_MAINTENANCE: 'EN_MAINTENANCE',
-  HORS_SERVICE:   'HORS_SERVICE',
-} as const;
-export type StatutChambre = (typeof StatutChambre)[keyof typeof StatutChambre];
-
-// ─── Labels ───────────────────────────────────────────────────────────────────
-
-export const TYPE_CHAMBRE_LABELS: Record<TypeChambre, string> = {
-  [TypeChambre.INDIVIDUELLE]:    'Individuelle',
-  [TypeChambre.DOUBLE]:          'Double',
-  [TypeChambre.COMMUNE]:         'Commune',
-  [TypeChambre.SOINS_INTENSIFS]: 'Soins intensifs',
-  [TypeChambre.SUITE_PRIVEE]:    'Suite privée',
+export const POLE_LABELS: Record<string, string> = {
+  'POLE MERE':                 'Pôle Mère',
+  'POLE ENFANT':               'Pôle Enfant',
+  'POLE DES SERVICES COMMUNS': 'Pôle des Services Communs',
 };
 
-export const STATUT_CHAMBRE_LABELS: Record<StatutChambre, string> = {
-  [StatutChambre.DISPONIBLE]:     'Disponible',
-  [StatutChambre.OCCUPEE]:        'Occupée',
-  [StatutChambre.EN_MAINTENANCE]: 'En maintenance',
-  [StatutChambre.HORS_SERVICE]:   'Hors service',
-};
+export const poleLabel = (nom: string): string => POLE_LABELS[nom] ?? nom;
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -55,9 +29,6 @@ export interface Chambre {
   numero: string;
   designation: string | null;
   etage: string | null;
-  type: TypeChambre;
-  capacite: number;
-  statut: StatutChambre;
   estActive: boolean;
   service: ServiceHospitalier;
   createdAt: string;
@@ -68,8 +39,6 @@ export interface CreateChambreDto {
   numero: string;
   designation?: string;
   etage?: string;
-  type: TypeChambre;
-  capacite: number;
 }
 
 export interface UpdateChambreDto {
@@ -77,9 +46,6 @@ export interface UpdateChambreDto {
   designation?: string;
   etage?: string;
   estActive?: boolean;
-  statut?: StatutChambre;
-  type?: TypeChambre;
-  capacite?: number;
 }
 
 // ─── Pôles & Services ─────────────────────────────────────────────────────────
@@ -96,11 +62,6 @@ export const getServices = async (poleId: string): Promise<ServiceHospitalier[]>
 
 // ─── Chambres ─────────────────────────────────────────────────────────────────
 
-/**
- * GET /chambres/service/:serviceId   → filtre direct par service
- * GET /services?poleId=...           → récupère les services du pôle, puis les chambres
- * GET /services                      → récupère tous les services, puis les chambres
- */
 export const getChambres = async (
   filters: { serviceId?: string; poleId?: string } = {}
 ): Promise<Chambre[]> => {

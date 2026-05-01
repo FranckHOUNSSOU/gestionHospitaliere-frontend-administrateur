@@ -11,9 +11,9 @@ export function useUsers() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
   const [filters, setFilters] = useState<UserFilters>({
-    role: '',
-    actif: '',
-    service: '',
+    role:   '',
+    actif:  '',
+    poleId: '',
   });
   // Texte de recherche local — filtrage côté client sur nom/email/numeroOrdre
   // (l'API ne propose pas de param search, donc on filtre après réception)
