@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteChambre } from '../../services/chambres';
+import { deleteChambre, poleLabel } from '../../services/chambres';
 import type { Chambre } from '../../services/chambres';
 
 interface DeleteChambreModalProps {
@@ -78,7 +78,7 @@ const DeleteChambreModal = ({ chambre, onClose, onDeleted }: DeleteChambreModalP
             <p style={{ margin: 0, fontSize: 14, color: '#374151', lineHeight: 1.6 }}>
               Vous êtes sur le point de supprimer la chambre{' '}
               <strong style={{ color: '#0C4A6E' }}>{chambre.numero}</strong>
-              {' '}({chambre.service.nom} — {chambre.service.pole.nom}).
+              {' '}({chambre.service.nom} — {poleLabel(chambre.service.pole.nom)}).
               Voulez-vous continuer ?
             </p>
           </div>

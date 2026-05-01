@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal, Form, Button, Row, Col, Alert, Spinner,
 } from 'react-bootstrap';
@@ -15,6 +15,9 @@ interface AddUserModalProps {
   onSuccess?: () => void;
 }
 
+interface PoleApi    { id: string; nom: string; }
+interface ServiceApi { id: string; nom: string; code: string; }
+
 interface CreateUserDto {
   nom: string;
   prenom: string;
@@ -22,42 +25,40 @@ interface CreateUserDto {
   motDePasse: string;
   role: 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
   telephone?: string;
-  service?: string;
+  poleId?: string;
+  serviceId?: string;
   numeroOrdre?: string;
 }
 
 // ── Constantes ─────────────────────────────────────────────────────────────
 
 const ROLES = [
-  { value: 'MEDECIN', label: 'Médecin' },
-  { value: 'AGENT_ADMINISTRATIF', label: 'Agent administratif' },
-  { value: 'AGENT_RENSEIGNEMENT', label: 'Agent renseignement' },
+  { value: 'MEDECIN',             label: 'Médecin' },
+  { value: 'AGENT_ADMINISTRATIF', label: 'Secrétaire' },
+  { value: 'AGENT_RENSEIGNEMENT', label: 'Agent de renseignement' },
 ] as const;
-
-const SERVICES = [
-  { value: 'Médecine générale', label: 'Médecine générale' },
-  { value: 'Pédiatrie', label: 'Pédiatrie' },
-  { value: 'Urgences', label: 'Urgences' },
-  { value: 'Accueil / Admissions', label: 'Accueil / Admissions' },
-  { value: 'Chirurgie', label: 'Chirurgie' },
-  { value: 'Gynécologie', label: 'Gynécologie' },
-  { value: 'Cardiologie', label: 'Cardiologie' },
-  { value: 'Administration', label: 'Administration système' },
-];
 
 const VALID_ROLES = ['MEDECIN', 'AGENT_ADMINISTRATIF', 'AGENT_RENSEIGNEMENT'] as const;
 type ValidRole = typeof VALID_ROLES[number];
 
+const POLE_LABELS: Record<string, string> = {
+  'POLE MERE':                 'Pôle Mère',
+  'POLE ENFANT':               'Pôle Enfant',
+  'POLE DES SERVICES COMMUNS': 'Pôle des Services Communs',
+};
+const poleLabel = (nom: string) => POLE_LABELS[nom] ?? nom;
+
 const initialForm = {
-  nom: '',
-  prenom: '',
-  email: '',
-  telephone: '',
-  role: '' as '' | ValidRole,
-  service: '',
-  numeroOrdre: '',
-  motDePasse: '',
-  confirmMotDePasse: '',
+  nom:              '',
+  prenom:           '',
+  email:            '',
+  telephone:        '',
+  role:             '' as '' | ValidRole,
+  poleId:           '',
+  serviceId:        '',
+  numeroOrdre:      '',
+  motDePasse:       '',
+  confirmMotDePasse:'',
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -84,18 +85,61 @@ function traduireErreur(message: string): string {
 
 export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalProps) {
   const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState('');
+
+  const [poles,           setPoles]           = useState<PoleApi[]>([]);
+  const [services,        setServices]        = useState<ServiceApi[]>([]);
+  const [loadingPoles,    setLoadingPoles]    = useState(false);
+  const [loadingServices, setLoadingServices] = useState(false);
+
+  const [error,   setError]   = useState('');
   const [loading, setLoading] = useState(false);
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  const showPole    = form.role === 'MEDECIN' || form.role === 'AGENT_ADMINISTRATIF';
+  const showService = form.role === 'MEDECIN';
+
+  // Charger les pôles à l'ouverture du modal
+  useEffect(() => {
+    if (!show) return;
+    setLoadingPoles(true);
+    client.get<PoleApi[]>('/poles')
+      .then(res => setPoles(res.data))
+      .catch(() => setPoles([]))
+      .finally(() => setLoadingPoles(false));
+  }, [show]);
+
+  // Charger les services quand le pôle change (MEDECIN uniquement)
+  useEffect(() => {
+    if (!form.poleId || form.role !== 'MEDECIN') {
+      setServices([]);
+      return;
+    }
+    setLoadingServices(true);
+    client.get<ServiceApi[]>('/services', { params: { poleId: form.poleId } })
+      .then(res => setServices(res.data))
+      .catch(() => setServices([]))
+      .finally(() => setLoadingServices(false));
+  }, [form.poleId, form.role]);
+
   const set = (field: keyof typeof initialForm, value: string) =>
     setForm(prev => ({ ...prev, [field]: value }));
+
+  const handleRoleChange = (value: string) => {
+    setForm(prev => ({ ...prev, role: value as '' | ValidRole, poleId: '', serviceId: '' }));
+    setServices([]);
+  };
+
+  const handlePoleChange = (poleId: string) => {
+    setForm(prev => ({ ...prev, poleId, serviceId: '' }));
+  };
 
   const handleClose = () => {
     setForm(initialForm);
     setError('');
+    setPoles([]);
+    setServices([]);
     onHide();
   };
 
@@ -109,6 +153,10 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
     }
     if (!isValidRole(form.role)) {
       setError('Veuillez sélectionner un rôle.');
+      return;
+    }
+    if (showPole && !form.poleId) {
+      setError('Veuillez sélectionner un pôle.');
       return;
     }
     if (!form.motDePasse) {
@@ -125,20 +173,20 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
     }
 
     const body: CreateUserDto = {
-      nom: form.nom.trim(),
-      prenom: form.prenom.trim(),
-      email: form.email.trim(),
+      nom:        form.nom.trim(),
+      prenom:     form.prenom.trim(),
+      email:      form.email.trim(),
       motDePasse: form.motDePasse,
-      role: form.role,
-      ...(form.telephone   && { telephone:    form.telephone.trim() }),
-      ...(form.service     && { service:      form.service }),
-      ...(form.numeroOrdre && { numeroOrdre:  form.numeroOrdre.trim() }),
+      role:       form.role,
+      ...(form.telephone   && { telephone:   form.telephone.trim() }),
+      ...(form.poleId      && { poleId:      form.poleId }),
+      ...(form.serviceId   && { serviceId:   form.serviceId }),
+      ...(form.numeroOrdre && { numeroOrdre: form.numeroOrdre.trim() }),
     };
 
     setLoading(true);
     try {
       await client.post('/auth/users', body);
-
       const nomComplet = `${form.prenom.trim()} ${form.nom.trim()}`;
       handleClose();
       setToastMessage(`Compte de ${nomComplet} créé. Pensez à l'activer.`);
@@ -151,6 +199,8 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
       setLoading(false);
     }
   };
+
+  // ── Rendu ────────────────────────────────────────────────────────────────
 
   return (
     <>
@@ -190,6 +240,7 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
               </Alert>
             )}
 
+            {/* ── Informations personnelles ── */}
             <div className="register-modal__section-label">Informations personnelles</div>
 
             <Row className="g-3 mb-3">
@@ -253,7 +304,7 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
               <Col xs={12} sm={6}>
                 <Form.Group controlId="regTel">
                   <Form.Label className="register-modal__label">
-                    Téléphone <span className="register-modal__optional"></span>
+                    Téléphone <span className="register-modal__optional">(optionnel)</span>
                   </Form.Label>
                   <div className="register-modal__input-wrap">
                     <svg className="register-modal__input-icon" width="16" height="16"
@@ -271,48 +322,102 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
               </Col>
             </Row>
 
-            <div className="register-modal__section-label">Rôle et service</div>
+            {/* ── Rôle et affectation ── */}
+            <div className="register-modal__section-label">Rôle et affectation</div>
 
             <Row className="g-3 mb-3">
-              <Col xs={12} sm={6}>
+              <Col xs={12} sm={showPole ? 6 : 12}>
                 <Form.Group controlId="regRole">
                   <Form.Label className="register-modal__label">Rôle</Form.Label>
                   <Form.Select
                     value={form.role}
-                    onChange={e => set('role', e.target.value)}
+                    onChange={e => handleRoleChange(e.target.value)}
                     className="register-modal__select"
                   >
-                    <option value="">Sélectionner</option>
+                    <option value="">Sélectionner un rôle</option>
                     {ROLES.map(r => (
                       <option key={r.value} value={r.value}>{r.label}</option>
                     ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
-              <Col xs={12} sm={6}>
-                <Form.Group controlId="regService">
-                  <Form.Label className="register-modal__label">
-                    Service / Spécialité <span className="register-modal__optional">(optionnel)</span>
-                  </Form.Label>
-                  <Form.Select
-                    value={form.service}
-                    onChange={e => set('service', e.target.value)}
-                    className="register-modal__select"
-                  >
-                    <option value="">Sélectionner</option>
-                    {SERVICES.map(s => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
+
+              {showPole && (
+                <Col xs={12} sm={6}>
+                  <Form.Group controlId="regPole">
+                    <Form.Label className="register-modal__label">
+                      Pôle
+                      {loadingPoles && (
+                        <Spinner animation="border" size="sm" className="ms-2"
+                          style={{ width: 12, height: 12 }} />
+                      )}
+                    </Form.Label>
+                    <Form.Select
+                      value={form.poleId}
+                      onChange={e => handlePoleChange(e.target.value)}
+                      className="register-modal__select"
+                      disabled={loadingPoles}
+                    >
+                      <option value="">
+                        {loadingPoles ? 'Chargement...' : 'Sélectionner un pôle'}
+                      </option>
+                      {poles.map(p => (
+                        <option key={p.id} value={p.id}>{poleLabel(p.nom)}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              )}
             </Row>
 
+            {showService && (
+              <Row className="g-3 mb-3">
+                <Col xs={12}>
+                  <Form.Group controlId="regService">
+                    <Form.Label className="register-modal__label">
+                      Service / Spécialité{' '}
+                      <span className="register-modal__optional">(optionnel)</span>
+                      {loadingServices && (
+                        <Spinner animation="border" size="sm" className="ms-2"
+                          style={{ width: 12, height: 12 }} />
+                      )}
+                    </Form.Label>
+                    <Form.Select
+                      value={form.serviceId}
+                      onChange={e => set('serviceId', e.target.value)}
+                      className="register-modal__select"
+                      disabled={!form.poleId || loadingServices}
+                    >
+                      <option value="">
+                        {!form.poleId
+                          ? 'Sélectionnez d\'abord un pôle'
+                          : loadingServices
+                          ? 'Chargement...'
+                          : services.length === 0
+                          ? 'Aucun service disponible'
+                          : 'Sélectionner un service'}
+                      </option>
+                      {services.map(s => (
+                        <option key={s.id} value={s.id}>{s.nom}</option>
+                      ))}
+                    </Form.Select>
+                    {!form.poleId && (
+                      <Form.Text className="text-muted" style={{ fontSize: 12 }}>
+                        Sélectionnez un pôle pour afficher les services disponibles.
+                      </Form.Text>
+                    )}
+                  </Form.Group>
+                </Col>
+              </Row>
+            )}
+
+            {/* ── Numéro d'ordre ── */}
             <Row className="g-3 mb-3">
               <Col xs={12}>
                 <Form.Group controlId="regNumero">
                   <Form.Label className="register-modal__label">
-                    Numéro d'ordre / Matricule <span className="register-modal__optional">(optionnel)</span>
+                    Numéro d'ordre / Matricule{' '}
+                    <span className="register-modal__optional">(optionnel)</span>
                   </Form.Label>
                   <div className="register-modal__input-wrap">
                     <svg className="register-modal__input-icon" width="16" height="16"
@@ -332,6 +437,7 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
               </Col>
             </Row>
 
+            {/* ── Sécurité ── */}
             <div className="register-modal__section-label">Sécurité du compte</div>
 
             <Row className="g-3 mb-4">

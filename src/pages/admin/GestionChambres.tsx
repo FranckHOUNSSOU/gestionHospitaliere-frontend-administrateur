@@ -3,58 +3,28 @@ import {
   getChambres,
   getPoles,
   getServices,
-  TypeChambre,
-  StatutChambre,
-  TYPE_CHAMBRE_LABELS,
-  STATUT_CHAMBRE_LABELS,
+  poleLabel,
 } from '../../services/chambres';
 import type { Chambre, Pole, ServiceHospitalier } from '../../services/chambres';
 import ChambreFormModal from './Gestionformmodal';
 import DeleteChambreModal from './Deletechambremodal';
 
-// ─── Badges ───────────────────────────────────────────────────────────────────
+// ─── Badge Statut actif/inactif ───────────────────────────────────────────────
 
-const STATUT_CFG: Record<StatutChambre, { bg: string; color: string; dot: string }> = {
-  [StatutChambre.DISPONIBLE]:     { bg: '#ECFDF5', color: '#166534', dot: '#22C55E' },
-  [StatutChambre.OCCUPEE]:        { bg: '#FFF7ED', color: '#9A3412', dot: '#F97316' },
-  [StatutChambre.EN_MAINTENANCE]: { bg: '#FEFCE8', color: '#854D0E', dot: '#EAB308' },
-  [StatutChambre.HORS_SERVICE]:   { bg: '#FEF2F2', color: '#991B1B', dot: '#EF4444' },
-};
-
-const StatutBadge = ({ statut }: { statut: StatutChambre }) => {
-  const c = STATUT_CFG[statut];
-  return (
+const ActiveBadge = ({ estActive }: { estActive: boolean }) => (
+  <span style={{
+    display: 'inline-flex', alignItems: 'center', gap: 5,
+    padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+    background: estActive ? '#ECFDF5' : '#FEF2F2',
+    color:      estActive ? '#166534' : '#991B1B',
+  }}>
     <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 5,
-      padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-      background: c.bg, color: c.color,
-    }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
-      {STATUT_CHAMBRE_LABELS[statut]}
-    </span>
-  );
-};
-
-const TYPE_CFG: Record<TypeChambre, { bg: string; color: string }> = {
-  [TypeChambre.INDIVIDUELLE]:    { bg: '#EFF6FF', color: '#1D4ED8' },
-  [TypeChambre.DOUBLE]:          { bg: '#F0FDF4', color: '#15803D' },
-  [TypeChambre.COMMUNE]:         { bg: '#FAF5FF', color: '#7C3AED' },
-  [TypeChambre.SOINS_INTENSIFS]: { bg: '#FFF1F2', color: '#BE123C' },
-  [TypeChambre.SUITE_PRIVEE]:    { bg: '#FFFBEB', color: '#B45309' },
-};
-
-const TypeBadge = ({ type }: { type: TypeChambre }) => {
-  const c = TYPE_CFG[type];
-  return (
-    <span style={{
-      display: 'inline-block', padding: '2px 9px', borderRadius: 6,
-      fontSize: 11, fontWeight: 600, background: c.bg, color: c.color,
-      letterSpacing: '0.02em',
-    }}>
-      {TYPE_CHAMBRE_LABELS[type]}
-    </span>
-  );
-};
+      width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+      background: estActive ? '#22C55E' : '#EF4444',
+    }} />
+    {estActive ? 'Active' : 'Inactive'}
+  </span>
+);
 
 // ─── Composant principal ──────────────────────────────────────────────────────
 
@@ -64,15 +34,13 @@ const GestionChambres = () => {
   const [services, setServices]   = useState<ServiceHospitalier[]>([]);
   const [loading, setLoading]     = useState(true);
 
-  const [filterPole, setFilterPole]       = useState('');
+  const [filterPole,    setFilterPole]    = useState('');
   const [filterService, setFilterService] = useState('');
-  const [filterType, setFilterType]       = useState('');
-  const [filterStatut, setFilterStatut]   = useState('');
-  const [search, setSearch]               = useState('');
+  const [search,        setSearch]        = useState('');
 
   const [showFormModal, setShowFormModal] = useState(false);
-  const [editTarget, setEditTarget]       = useState<Chambre | null>(null);
-  const [deleteTarget, setDeleteTarget]   = useState<Chambre | null>(null);
+  const [editTarget,    setEditTarget]    = useState<Chambre | null>(null);
+  const [deleteTarget,  setDeleteTarget]  = useState<Chambre | null>(null);
 
   const fetchChambres = async () => {
     setLoading(true);
@@ -96,34 +64,31 @@ const GestionChambres = () => {
   }, [filterPole]);
 
   const filtered = useMemo(() => chambres.filter((c) => {
-    if (filterType   && c.type   !== filterType)   return false;
-    if (filterStatut && c.statut !== filterStatut) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (!c.numero.toLowerCase().includes(q) &&
-          !c.service.nom.toLowerCase().includes(q) &&
-          !c.service.pole.nom.toLowerCase().includes(q)) return false;
-    }
-    return true;
-  }), [chambres, filterType, filterStatut, search]);
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      c.numero.toLowerCase().includes(q) ||
+      (c.designation ?? '').toLowerCase().includes(q) ||
+      (c.etage ?? '').toLowerCase().includes(q) ||
+      c.service.nom.toLowerCase().includes(q) ||
+      poleLabel(c.service.pole.nom).toLowerCase().includes(q)
+    );
+  }), [chambres, search]);
 
   const stats = useMemo(() => ({
-    total:       chambres.length,
-    disponible:  chambres.filter((c) => c.statut === StatutChambre.DISPONIBLE).length,
-    occupee:     chambres.filter((c) => c.statut === StatutChambre.OCCUPEE).length,
-    maintenance: chambres.filter((c) => c.statut === StatutChambre.EN_MAINTENANCE).length,
+    total:     chambres.length,
+    actives:   chambres.filter((c) => c.estActive).length,
+    inactives: chambres.filter((c) => !c.estActive).length,
+    services:  new Set(chambres.map((c) => c.service.id)).size,
   }), [chambres]);
 
   const handleSaved   = () => { setShowFormModal(false); setEditTarget(null); fetchChambres(); };
   const handleDeleted = () => { setDeleteTarget(null); fetchChambres(); };
   const openCreate    = () => { setEditTarget(null); setShowFormModal(true); };
   const openEdit      = (c: Chambre) => { setEditTarget(c); setShowFormModal(true); };
-  const hasFilters    = !!(filterPole || filterService || filterType || filterStatut || search);
+  const hasFilters    = !!(filterPole || filterService || search);
 
-  const resetFilters = () => {
-    setFilterPole(''); setFilterService('');
-    setFilterType(''); setFilterStatut(''); setSearch('');
-  };
+  const resetFilters  = () => { setFilterPole(''); setFilterService(''); setSearch(''); };
 
   // ─── Styles communs ───────────────────────────────────────────────────────
 
@@ -143,10 +108,16 @@ const GestionChambres = () => {
   // ─── Rendu ────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ padding: '28px 32px', background: '#F8FAFC', minHeight: '100vh', fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
+    <div style={{
+      padding: '28px 32px', background: '#F8FAFC',
+      minHeight: '100vh', fontFamily: "'DM Sans','Segoe UI',sans-serif",
+    }}>
 
       {/* ── Titre + Bouton ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div style={{
+        display: 'flex', alignItems: 'flex-start',
+        justifyContent: 'space-between', marginBottom: 24,
+      }}>
         <div>
           <h4 style={{ margin: 0, fontWeight: 700, fontSize: 22, color: '#0F172A', letterSpacing: '-0.3px' }}>
             Gestion des chambres
@@ -173,10 +144,10 @@ const GestionChambres = () => {
       {/* ── Cartes statistiques ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'TOTAL CHAMBRES',  value: stats.total,       bg: '#EFF8FF', border: '#BAE6FD', color: '#0369A1', icon: 'bi-building' },
-          { label: 'DISPONIBLES',     value: stats.disponible,  bg: '#F0FDF4', border: '#BBF7D0', color: '#15803D', icon: 'bi-check-circle' },
-          { label: 'OCCUPÉES',        value: stats.occupee,     bg: '#FFF7ED', border: '#FED7AA', color: '#C2410C', icon: 'bi-door-open' },
-          { label: 'EN MAINTENANCE',  value: stats.maintenance, bg: '#FEFCE8', border: '#FEF08A', color: '#A16207', icon: 'bi-tools' },
+          { label: 'TOTAL CHAMBRES',  value: stats.total,     bg: '#EFF8FF', border: '#BAE6FD', color: '#0369A1', icon: 'bi-door-open'     },
+          { label: 'ACTIVES',         value: stats.actives,   bg: '#F0FDF4', border: '#BBF7D0', color: '#15803D', icon: 'bi-check-circle'   },
+          { label: 'INACTIVES',       value: stats.inactives, bg: '#FEF2F2', border: '#FECACA', color: '#B91C1C', icon: 'bi-x-circle'       },
+          { label: 'SERVICES COUVERTS', value: stats.services, bg: '#FFF7ED', border: '#FED7AA', color: '#C2410C', icon: 'bi-diagram-3'    },
         ].map((s) => (
           <div key={s.label} style={{
             background: s.bg, border: `1.5px solid ${s.border}`,
@@ -196,12 +167,12 @@ const GestionChambres = () => {
         ))}
       </div>
 
-      {/* ── Zone de recherche + filtres ── */}
+      {/* ── Recherche + Filtres ── */}
       <div style={{
         background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB',
         padding: '16px 20px', marginBottom: 20,
       }}>
-        {/* Ligne 1 : Recherche */}
+        {/* Recherche */}
         <div style={{ position: 'relative', marginBottom: 12 }}>
           <i className="bi bi-search" style={{
             position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
@@ -210,7 +181,7 @@ const GestionChambres = () => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Patient, service, salle..."
+            placeholder="Rechercher par numéro, désignation, étage, service, pôle..."
             style={{
               width: '100%', padding: '9px 12px 9px 36px', boxSizing: 'border-box',
               border: '1.5px solid #E5E7EB', borderRadius: 8, fontSize: 14,
@@ -219,35 +190,30 @@ const GestionChambres = () => {
           />
         </div>
 
-        {/* Ligne 2 : Filtres */}
+        {/* Filtres */}
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+
+          {/* Filtre pôle */}
           <select style={selectSt} value={filterPole} onChange={(e) => setFilterPole(e.target.value)}>
             <option value="">Tous les pôles</option>
-            {poles.map((p) => <option key={p.id} value={p.id}>{p.nom}</option>)}
+            {poles.map((p) => <option key={p.id} value={p.id}>{poleLabel(p.nom)}</option>)}
           </select>
 
+          {/* Filtre service (dépend du pôle) */}
           <select
-            style={{ ...selectSt, opacity: !filterPole ? 0.55 : 1, cursor: !filterPole ? 'not-allowed' : 'pointer' }}
+            style={{
+              ...selectSt,
+              opacity: !filterPole ? 0.55 : 1,
+              cursor: !filterPole ? 'not-allowed' : 'pointer',
+            }}
             value={filterService}
             disabled={!filterPole}
             onChange={(e) => setFilterService(e.target.value)}
           >
-            <option value="">Tous les services</option>
+            <option value="">
+              {!filterPole ? 'Sélectionnez un pôle d\'abord' : 'Tous les services'}
+            </option>
             {services.map((s) => <option key={s.id} value={s.id}>{s.nom}</option>)}
-          </select>
-
-          <select style={selectSt} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-            <option value="">Tous les types</option>
-            {Object.values(TypeChambre).map((t) => (
-              <option key={t} value={t}>{TYPE_CHAMBRE_LABELS[t]}</option>
-            ))}
-          </select>
-
-          <select style={selectSt} value={filterStatut} onChange={(e) => setFilterStatut(e.target.value)}>
-            <option value="">Tous les statuts</option>
-            {Object.values(StatutChambre).map((s) => (
-              <option key={s} value={s}>{STATUT_CHAMBRE_LABELS[s]}</option>
-            ))}
           </select>
 
           {hasFilters && (
@@ -257,9 +223,10 @@ const GestionChambres = () => {
                 padding: '8px 14px', borderRadius: 8, border: '1.5px solid #E5E7EB',
                 background: '#fff', color: '#6B7280', fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+                display: 'flex', alignItems: 'center', gap: 5,
               }}
             >
-              <i className="bi bi-x me-1" />
+              <i className="bi bi-x" />
               Réinitialiser
             </button>
           )}
@@ -284,8 +251,8 @@ const GestionChambres = () => {
             </p>
             <p style={{ margin: '4px 0 0', color: '#9CA3AF', fontSize: 13 }}>
               {chambres.length === 0
-                ? 'Créez votre première chambre.'
-                : 'Modifiez vos critères de recherche.'}
+                ? 'Créez votre première chambre en cliquant sur « Nouvelle chambre ».'
+                : 'Aucun résultat pour ces critères de recherche.'}
             </p>
           </div>
         ) : (
@@ -294,9 +261,9 @@ const GestionChambres = () => {
               <thead>
                 <tr style={{ background: '#F8FAFC', borderBottom: '1.5px solid #E5E7EB' }}>
                   <th style={thSt}>N° CHAMBRE</th>
-                  <th style={thSt}>TYPE</th>
+                  <th style={thSt}>DÉSIGNATION</th>
+                  <th style={thSt}>ÉTAGE</th>
                   <th style={thSt}>PÔLE / SERVICE</th>
-                  <th style={thSt}>CAPACITÉ</th>
                   <th style={thSt}>STATUT</th>
                   <th style={{ ...thSt, textAlign: 'right' }}>ACTIONS</th>
                 </tr>
@@ -312,30 +279,54 @@ const GestionChambres = () => {
                     onMouseEnter={(e) => (e.currentTarget.style.background = '#F8FAFC')}
                     onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
                   >
+                    {/* N° Chambre */}
                     <td style={{ padding: '13px 16px' }}>
-                      <span style={{ fontWeight: 700, fontSize: 14, color: '#0C4A6E' }}>
+                      <span style={{ fontWeight: 700, fontSize: 14, color: '#0C4A6E', fontFamily: 'monospace' }}>
                         {c.numero}
                       </span>
                     </td>
-                    <td style={{ padding: '13px 16px' }}>
-                      <TypeBadge type={c.type} />
+
+                    {/* Désignation */}
+                    <td style={{ padding: '13px 16px', maxWidth: 180 }}>
+                      {c.designation ? (
+                        <span style={{ fontSize: 13, color: '#374151' }}>{c.designation}</span>
+                      ) : (
+                        <span style={{ fontSize: 13, color: '#D1D5DB' }}>—</span>
+                      )}
                     </td>
+
+                    {/* Étage */}
+                    <td style={{ padding: '13px 16px' }}>
+                      {c.etage ? (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          fontSize: 12, fontWeight: 500, color: '#374151',
+                          background: '#F1F5F9', borderRadius: 6, padding: '3px 8px',
+                        }}>
+                          <i className="bi bi-layers" style={{ fontSize: 10 }} />
+                          {c.etage}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 13, color: '#D1D5DB' }}>—</span>
+                      )}
+                    </td>
+
+                    {/* Pôle / Service */}
                     <td style={{ padding: '13px 16px' }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
                         {c.service.nom}
                       </div>
-                      <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 1 }}>
-                        {c.service.pole.nom}
+                      <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                        {poleLabel(c.service.pole.nom)}
                       </div>
                     </td>
+
+                    {/* Statut */}
                     <td style={{ padding: '13px 16px' }}>
-                      <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>
-                        {c.capacite} lit{c.capacite > 1 ? 's' : ''}
-                      </span>
+                      <ActiveBadge estActive={c.estActive} />
                     </td>
-                    <td style={{ padding: '13px 16px' }}>
-                      <StatutBadge statut={c.statut} />
-                    </td>
+
+                    {/* Actions */}
                     <td style={{ padding: '13px 16px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                         <button
@@ -376,7 +367,8 @@ const GestionChambres = () => {
         {!loading && filtered.length > 0 && (
           <div style={{
             padding: '10px 20px', borderTop: '1px solid #F1F5F9',
-            background: '#FAFAFA', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            background: '#FAFAFA', display: 'flex',
+            justifyContent: 'space-between', alignItems: 'center',
           }}>
             <span style={{ fontSize: 13, color: '#9CA3AF' }}>
               {filtered.length} chambre{filtered.length > 1 ? 's' : ''}

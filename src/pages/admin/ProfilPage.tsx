@@ -8,11 +8,19 @@ interface ProfilData {
   prenom: string;
   email: string;
   role: string;
-  pole: string | null;
+  pole: { id: string; nom: string } | null;
+  service: { id: string; nom: string } | null;
   telephone: string | null;
   numeroOrdre: string | null;
   createdAt: string;
 }
+
+const POLE_LABELS: Record<string, string> = {
+  'POLE MERE':                 'Pôle Mère',
+  'POLE ENFANT':               'Pôle Enfant',
+  'POLE DES SERVICES COMMUNS': 'Pôle des Services Communs',
+};
+const poleLabel = (nom: string) => POLE_LABELS[nom] ?? nom;
 
 const ROLE_LABELS: Record<string, string> = {
   ADMINISTRATEUR:      'Administrateur système',
@@ -171,7 +179,8 @@ export default function ProfilPage() {
             </div>
             <div className="adm-card-body" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
               <ReadRow label="Rôle"                    value={ROLE_LABELS[profil.role] ?? profil.role} />
-              <ReadRow label="Pôle hospitalier"        value={profil.pole ?? '—'} />
+              <ReadRow label="Pôle hospitalier"  value={profil.pole ? poleLabel(profil.pole.nom) : '—'} />
+              <ReadRow label="Service"          value={profil.service?.nom ?? '—'} />
               <ReadRow label="N° d'ordre professionnel" value={profil.numeroOrdre ?? '—'} />
               <ReadRow
                 label="Membre depuis"

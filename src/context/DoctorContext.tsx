@@ -29,15 +29,21 @@ export function DoctorProvider({ children }: { children: ReactNode }) {
         id: string;
         nom: string;
         prenom: string;
-        service?: string;
+        pole?: { id: string; nom: string } | null;
+        service?: { id: string; nom: string } | null;
       }>>('/auth/users?role=MEDECIN');
 
       if (Array.isArray(data) && data.length > 0) {
+        const POLE_LABELS: Record<string, string> = {
+          'POLE MERE': 'Pôle Mère',
+          'POLE ENFANT': 'Pôle Enfant',
+          'POLE DES SERVICES COMMUNS': 'Pôle des Services Communs',
+        };
         const mapped: Doctor[] = data.map((u) => ({
-          id: u.id,
-          name: `Dr. ${u.prenom} ${u.nom}`,
-          specialty: u.service ?? 'Médecine générale',
-          department: u.service ?? 'Médecine générale',
+          id:         u.id,
+          name:       `Dr. ${u.prenom} ${u.nom}`,
+          specialty:  u.service?.nom ?? (u.pole ? (POLE_LABELS[u.pole.nom] ?? u.pole.nom) : 'Médecine générale'),
+          department: u.pole ? (POLE_LABELS[u.pole.nom] ?? u.pole.nom) : 'Médecine générale',
         }));
         // Fusionner : médecins API en premier, puis mockData en fallback
         const mockNotInApi = mockDoctors.filter(

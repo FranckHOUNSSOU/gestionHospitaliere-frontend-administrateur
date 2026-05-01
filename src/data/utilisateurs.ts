@@ -7,7 +7,7 @@ export const utilisateursData = {
     const params = new URLSearchParams();
     if (filters.role)    params.set('role',    filters.role);
     if (filters.actif)   params.set('actif',   filters.actif);
-    if (filters.service) params.set('service', filters.service);
+    if (filters.poleId) params.set('poleId', filters.poleId);
     const query = params.toString() ? `?${params}` : '';
     const { data } = await client.get<User[]>(`/auth/users${query}`);
     return data;

@@ -1,14 +1,25 @@
 
 export type UserRole = 'ADMINISTRATEUR' | 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
 
-// L'API renvoie actif: boolean — pas de statut "Bloqué" dans ce backend
+export interface UserPole {
+  id: string;
+  nom: string;
+}
+
+export interface UserService {
+  id: string;
+  nom: string;
+  code: string;
+}
+
 export interface User {
   id: string;
   nom: string;
   prenom: string;
   email: string;
   role: UserRole;
-  service: string | null;
+  pole: UserPole | null;
+  service: UserService | null;
   telephone: string | null;
   numeroOrdre: string | null;
   actif: boolean;
@@ -23,7 +34,7 @@ export interface User {
 export interface UserFilters {
   role: UserRole | '';
   actif: 'true' | 'false' | '';
-  service: string;
+  poleId: string;
 }
 
 export interface CreateUserPayload {
@@ -33,6 +44,7 @@ export interface CreateUserPayload {
   motDePasse: string;
   role: 'MEDECIN' | 'AGENT_ADMINISTRATIF' | 'AGENT_RENSEIGNEMENT';
   telephone?: string;
-  service?: string;
+  poleId?: string;
+  serviceId?: string;
   numeroOrdre?: string;
 }
