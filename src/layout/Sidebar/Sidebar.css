@@ -1,0 +1,7 @@
+/* Badge counters for sidebar nav items */
+.adm-nb-red   { background: var(--c-red-bg);    color: var(--c-red) !important;    }
+
+.adm-nb-blue  { background: var(--c-accent-bg); color: var(--c-accent) !important; }
+
+.adm-nb-green { background: var(--c-green-bg);  color: var(--c-green) !important;  }
+

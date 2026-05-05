@@ -10,10 +10,10 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 // ← rôles exacts du backend
 const ROLE_ROUTES: Record<UserRole, string> = {
-  ADMINISTRATEUR:      '/admin',
+  ADMINISTRATEUR:      '/',
   MEDECIN:             '/medecin/dashboard',
   AGENT_ADMINISTRATIF: '/agent',
-  AGENT_RENSEIGNEMENT:  '/agentR', 
+  AGENT_RENSEIGNEMENT:  '/agentR',
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
