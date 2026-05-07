@@ -161,13 +161,13 @@ export function UserListPage() {
       {/* Tableau */}
       <div style={{
         background: cardBg, borderRadius: 14,
-        border: `1px solid ${cardBorder}`, overflow: 'hidden',
+        border: `1px solid ${cardBorder}`, overflowX: 'auto',
         boxShadow: dark ? '0 1px 3px rgba(0,0,0,0.25)' : '0 1px 3px rgba(0,0,0,0.05)',
       }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1100 }}>
           <thead>
             <tr style={{ background: headBg, borderBottom: `1px solid ${cardBorder}` }}>
-              {['Utilisateur', "N° d'ordre", 'Rôle', 'Statut', 'Dernière connexion', 'Création', ''].map((h, i) => (
+              {['Utilisateur', "N° d'ordre", 'Rôle', 'Pôle / Service', 'Téléphone', 'Statut', 'Dernière connexion', 'Création', ''].map((h, i) => (
                 <th key={i} style={{
                   padding: '11px 16px', textAlign: 'left',
                   fontSize: 11, fontWeight: 600, color: textMuted,
@@ -181,14 +181,14 @@ export function UserListPage() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: textMuted, fontSize: 13 }}>
+                <td colSpan={9} style={{ padding: 40, textAlign: 'center', color: textMuted, fontSize: 13 }}>
                   Chargement…
                 </td>
               </tr>
             )}
             {!loading && paginated.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: textMuted, fontSize: 13 }}>
+                <td colSpan={9} style={{ padding: 40, textAlign: 'center', color: textMuted, fontSize: 13 }}>
                   Aucun utilisateur trouvé.
                 </td>
               </tr>
@@ -225,15 +225,15 @@ export function UserListPage() {
                   </td>
 
                   {/* N° d'ordre */}
-                  <td style={{ padding: '13px 16px' }}>
+                  <td style={{ padding: '13px 16px', whiteSpace: 'nowrap' }}>
                     {user.numeroOrdre
                       ? <span style={{ fontSize: 13, color: '#2563eb', fontWeight: 500 }}>{user.numeroOrdre}</span>
-                      : <span style={{ fontSize: 13, color: '#d1d5db' }}>—</span>
+                      : <span style={{ fontSize: 13, color: dark ? '#52525b' : '#d1d5db' }}>—</span>
                     }
                   </td>
 
                   {/* Rôle */}
-                  <td style={{ padding: '13px 16px' }}>
+                  <td style={{ padding: '13px 16px', whiteSpace: 'nowrap' }}>
                     <span style={{
                       padding: '3px 10px', borderRadius: 20,
                       fontSize: 11, fontWeight: 600,
@@ -243,8 +243,29 @@ export function UserListPage() {
                     </span>
                   </td>
 
-                  {/* Statut */}
+                  {/* Pôle / Service */}
                   <td style={{ padding: '13px 16px' }}>
+                    {user.pole
+                      ? <>
+                          <div style={{ fontSize: 13, color: textMain, fontWeight: 500 }}>{user.pole.nom}</div>
+                          {user.service && (
+                            <div style={{ fontSize: 11, color: textMuted }}>{user.service.nom}</div>
+                          )}
+                        </>
+                      : <span style={{ fontSize: 13, color: dark ? '#52525b' : '#d1d5db' }}>—</span>
+                    }
+                  </td>
+
+                  {/* Téléphone */}
+                  <td style={{ padding: '13px 16px', whiteSpace: 'nowrap' }}>
+                    {user.telephone
+                      ? <span style={{ fontSize: 13, color: textMain }}>{user.telephone}</span>
+                      : <span style={{ fontSize: 13, color: dark ? '#52525b' : '#d1d5db' }}>—</span>
+                    }
+                  </td>
+
+                  {/* Statut */}
+                  <td style={{ padding: '13px 16px', whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{
                         width: 7, height: 7, borderRadius: '50%',
@@ -257,12 +278,12 @@ export function UserListPage() {
                   </td>
 
                   {/* Dernière connexion */}
-                  <td style={{ padding: '13px 16px', fontSize: 12, color: textMuted }}>
-                    {formatLogin(user.createdAt)}
+                  <td style={{ padding: '13px 16px', fontSize: 12, color: textMuted, whiteSpace: 'nowrap' }}>
+                    {formatLogin(user.derniereConnexion)}
                   </td>
 
                   {/* Date de création */}
-                  <td style={{ padding: '13px 16px', fontSize: 12, color: textMuted }}>
+                  <td style={{ padding: '13px 16px', fontSize: 12, color: textMuted, whiteSpace: 'nowrap' }}>
                     {formatDate(user.createdAt)}
                   </td>
 
