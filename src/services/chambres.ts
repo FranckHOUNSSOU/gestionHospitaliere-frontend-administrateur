@@ -1,5 +1,16 @@
 import client from './clients';
 
+// Gère les réponses paginées (Spring Boot { content: [...] }) ou tableaux bruts
+function toArray<T>(data: unknown): T[] {
+  if (Array.isArray(data)) return data as T[];
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    const arr = obj['content'] ?? obj['data'] ?? obj['items'] ?? obj['results'];
+    if (Array.isArray(arr)) return arr as T[];
+  }
+  return [];
+}
+
 // ─── Labels pôles (noms enum → libellés lisibles) ─────────────────────────────
 
 export const POLE_LABELS: Record<string, string> = {
@@ -72,13 +83,13 @@ export interface UpdateChambreDto {
 // ─── Pôles & Services ─────────────────────────────────────────────────────────
 
 export const getPoles = async (): Promise<Pole[]> => {
-  const res = await client.get<Pole[]>('/poles');
-  return res.data;
+  const res = await client.get('/poles');
+  return toArray<Pole>(res.data);
 };
 
 export const getServices = async (poleId: string): Promise<ServiceHospitalier[]> => {
-  const res = await client.get<ServiceHospitalier[]>('/services', { params: { poleId } });
-  return res.data;
+  const res = await client.get('/services', { params: { poleId } });
+  return toArray<ServiceHospitalier>(res.data);
 };
 
 // ─── Chambres ─────────────────────────────────────────────────────────────────
@@ -87,17 +98,17 @@ export const getChambres = async (
   filters: { serviceId?: string; poleId?: string } = {}
 ): Promise<Chambre[]> => {
   if (filters.serviceId) {
-    const res = await client.get<Chambre[]>(`/chambres/service/${filters.serviceId}`);
-    return res.data;
+    const res = await client.get(`/chambres/service/${filters.serviceId}`);
+    return toArray<Chambre>(res.data);
   }
 
   const params = filters.poleId ? { poleId: filters.poleId } : {};
-  const servicesRes = await client.get<ServiceHospitalier[]>('/services', { params });
-  const services = servicesRes.data;
+  const servicesRes = await client.get('/services', { params });
+  const services = toArray<ServiceHospitalier>(servicesRes.data);
 
   const results = await Promise.allSettled(
     services.map((s) =>
-      client.get<Chambre[]>(`/chambres/service/${s.id}`).then((r) => r.data)
+      client.get(`/chambres/service/${s.id}`).then((r) => toArray<Chambre>(r.data))
     )
   );
 
