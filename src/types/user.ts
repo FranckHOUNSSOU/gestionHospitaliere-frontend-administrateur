@@ -24,6 +24,7 @@ export interface User {
   numeroOrdre: string | null;
   actif: boolean;
   createdAt: string;
+  derniereConnexion: string | null;
   createur?: {
     id: string;
     nom: string;

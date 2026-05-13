@@ -24,11 +24,28 @@ export interface ServiceHospitalier {
   pole: Pole;
 }
 
+export type TypeChambre =
+  | 'INDIVIDUELLE'
+  | 'DOUBLE'
+  | 'COMMUNE'
+  | 'SOINS_INTENSIFS'
+  | 'SUITE_PRIVEE';
+
+export const TYPE_CHAMBRE_LABELS: Record<TypeChambre, string> = {
+  INDIVIDUELLE:    'Individuelle',
+  DOUBLE:          'Double',
+  COMMUNE:         'Commune',
+  SOINS_INTENSIFS: 'Soins intensifs',
+  SUITE_PRIVEE:    'Suite privée',
+};
+
 export interface Chambre {
   id: string;
   numero: string;
   designation: string | null;
   etage: string | null;
+  type: TypeChambre;
+  capacite: number;
   estActive: boolean;
   service: ServiceHospitalier;
   createdAt: string;
@@ -37,12 +54,16 @@ export interface Chambre {
 
 export interface CreateChambreDto {
   numero: string;
+  type: TypeChambre;
+  capacite: number;
   designation?: string;
   etage?: string;
 }
 
 export interface UpdateChambreDto {
   numero?: string;
+  type?: TypeChambre;
+  capacite?: number;
   designation?: string;
   etage?: string;
   estActive?: boolean;

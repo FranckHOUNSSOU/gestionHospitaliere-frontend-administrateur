@@ -4,11 +4,13 @@ import {
   updateChambre,
   getServices,
   poleLabel,
+  TYPE_CHAMBRE_LABELS,
 } from '../../../services/chambres';
 import type {
   Chambre,
   Pole,
   ServiceHospitalier,
+  TypeChambre,
   CreateChambreDto,
   UpdateChambreDto,
 } from '../../../services/chambres';
@@ -18,6 +20,8 @@ interface ChambreFormState {
   designation: string;
   etage:       string;
   serviceId:   string;
+  type:        TypeChambre;
+  capacite:    string;
 }
 
 interface ChambreFormModalProps {
@@ -77,8 +81,10 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
           designation: chambre.designation ?? '',
           etage:       chambre.etage ?? '',
           serviceId:   chambre.service.id,
+          type:        chambre.type,
+          capacite:    String(chambre.capacite),
         }
-      : { numero: '', designation: '', etage: '', serviceId: '' }
+      : { numero: '', designation: '', etage: '', serviceId: '', type: 'INDIVIDUELLE', capacite: '1' }
   );
   const [estActive, setEstActive]           = useState<boolean>(chambre?.estActive ?? true);
   const [selectedPoleId, setSelectedPoleId] = useState<string>(chambre?.service.pole.id ?? '');
@@ -110,11 +116,17 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
     if (!form.numero.trim())  { setError('Le numéro de chambre est obligatoire.'); return; }
     if (form.numero.trim().length > 20) { setError('Le numéro ne doit pas dépasser 20 caractères.'); return; }
     if (!form.serviceId)      { setError('Veuillez sélectionner un service.'); return; }
+    const capaciteNum = parseInt(form.capacite, 10);
+    if (!form.capacite || isNaN(capaciteNum) || capaciteNum < 1) {
+      setError('La capacité doit être un entier positif (≥ 1).'); return;
+    }
 
     setSaving(true);
     try {
       const dto: CreateChambreDto = {
-        numero:      form.numero.trim(),
+        numero:   form.numero.trim(),
+        type:     form.type,
+        capacite: capaciteNum,
         ...(form.designation.trim() && { designation: form.designation.trim() }),
         ...(form.etage.trim()       && { etage: form.etage.trim() }),
       };
@@ -257,6 +269,39 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
                 <p style={{ margin: '4px 0 0', fontSize: 11, color: '#9CA3AF' }}>
                   Description courte de la chambre (optionnel)
                 </p>
+              </div>
+
+              {/* Type + Capacité */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={S.label}>
+                    Type de chambre <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <i className="bi bi-grid" style={S.icon} />
+                    <select style={S.field} value={form.type} onChange={set('type')}>
+                      {(Object.keys(TYPE_CHAMBRE_LABELS) as TypeChambre[]).map(t => (
+                        <option key={t} value={t}>{TYPE_CHAMBRE_LABELS[t]}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={S.label}>
+                    Capacité (lits) <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <i className="bi bi-person-plus" style={S.icon} />
+                    <input
+                      type="number"
+                      min={1}
+                      style={S.field}
+                      value={form.capacite}
+                      placeholder="ex : 2"
+                      onChange={set('capacite')}
+                    />
+                  </div>
+                </div>
               </div>
 
             </div>
