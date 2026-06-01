@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { User } from '../../../types/user';
 
 interface ActionMenuProps {
@@ -9,8 +9,18 @@ interface ActionMenuProps {
 }
 
 export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionMenuProps) {
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [open, setOpen]   = useState(false);
+  const [busy, setBusy]   = useState(false);
+  const [openUp, setOpenUp] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const handleToggle = () => {
+    if (!open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setOpenUp(window.innerHeight - rect.bottom < 200);
+    }
+    setOpen(o => !o);
+  };
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -20,8 +30,9 @@ export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionM
   return (
     <div className="adm-action-menu">
       <button
+        ref={triggerRef}
         className="adm-action-menu-trigger"
-        onClick={() => setOpen(o => !o)}
+        onClick={handleToggle}
         disabled={busy}
         title="Actions"
       >
@@ -30,7 +41,10 @@ export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionM
       {open && (
         <>
           <div className="adm-action-menu-overlay" onClick={() => setOpen(false)} />
-          <div className="adm-action-menu-dropdown">
+          <div
+            className="adm-action-menu-dropdown"
+            style={openUp ? { top: 'auto', bottom: '110%' } : undefined}
+          >
             {user.actif ? (
               <button
                 className="adm-action-menu-item adm-action-menu-item--danger"
