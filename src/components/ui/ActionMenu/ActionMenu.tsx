@@ -20,9 +20,23 @@ export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionM
   const handleToggle = () => {
     if (!open && triggerRef.current) {
       const r = triggerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - r.bottom;
+
+      // Chercher le conteneur scrollable le plus proche (le wrapper du tableau)
+      let scrollParent: Element | null = triggerRef.current.parentElement;
+      while (scrollParent) {
+        const s = window.getComputedStyle(scrollParent);
+        if (s.overflow === 'auto' || s.overflowX === 'auto' || s.overflowY === 'auto' ||
+            s.overflow === 'scroll' || s.overflowX === 'scroll') break;
+        scrollParent = scrollParent.parentElement;
+      }
+      const containerBottom = scrollParent
+        ? scrollParent.getBoundingClientRect().bottom
+        : window.innerHeight;
+
+      // Ouvrir vers le haut si l'espace sous le bouton dans le conteneur est insuffisant
+      const spaceBelow = containerBottom - r.bottom;
       setPos(
-        spaceBelow < 200
+        spaceBelow < 120
           ? { bottom: window.innerHeight - r.top + 4, right: window.innerWidth - r.right }
           : { top: r.bottom + 4,                      right: window.innerWidth - r.right }
       );
