@@ -49,6 +49,10 @@ export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionM
     try { await fn(); } finally { setBusy(false); setOpen(false); }
   };
 
+  // Rendre dans .adm pour que les variables CSS soient disponibles.
+  // position:fixed reste relatif au viewport même à l'intérieur de .adm.
+  const portalTarget = document.querySelector('.adm') ?? document.body;
+
   const dropdown = open && pos ? createPortal(
     <>
       <div
@@ -95,7 +99,7 @@ export function ActionMenu({ user, onActivate, onDeactivate, onDelete }: ActionM
         </button>
       </div>
     </>,
-    document.body
+    portalTarget
   ) : null;
 
   return (
