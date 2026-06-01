@@ -58,7 +58,7 @@ export function UserListPage() {
   const {
     users: allUsers, totalAll, loading, error,
     filters, search, setSearch, updateFilter,
-    activateUser, deactivateUser, deleteUser,
+    activateUser, deactivateUser, deleteUser, refetch,
   } = useUsers();
 
   const { dark } = useTheme();
@@ -332,7 +332,7 @@ export function UserListPage() {
         <AddUserModal
           show={showModal}
           onHide={() => setShowModal(false)}
-          onSuccess={() => {}}
+          onSuccess={() => { setShowModal(false); refetch(); }}
         />
       )}
     </div>
