@@ -1,4 +1,4 @@
-import client from './clients';
+﻿import client from '../api/clients';
 
 // Gère les réponses paginées (Spring Boot { content: [...] }) ou tableaux bruts
 function toArray<T>(data: unknown): T[] {
