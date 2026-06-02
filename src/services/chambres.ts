@@ -1,4 +1,4 @@
-import client from './clients';
+﻿import client from '../api/clients';
 
 // ─── Labels pôles (noms enum → libellés lisibles) ─────────────────────────────
 
