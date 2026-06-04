@@ -12,6 +12,7 @@ import ProfilPage from './pages/ProfilPage/ProfilPage';
 import ConfidentialitePage from './pages/ConfidentialitePage/ConfidentialitePage';
 import NotificationsPage from './pages/NotificationsPage/NotificationsPage';
 import SecurityPage from './pages/SecurityPage/SecurityPage';
+import LogsPage from './pages/LogsPage/LogsPage';
 
 const UserListPage = lazy(() => import('./pages/UserListPage/UserListPage'));
 
@@ -43,6 +44,7 @@ function App() {
               <Route path="confidentialite" element={<ConfidentialitePage />} />
               <Route path="notifications"   element={<NotificationsPage />}   />
               <Route path="security"        element={<SecurityPage />}        />
+              <Route path="logs"           element={<LogsPage />}            />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />
