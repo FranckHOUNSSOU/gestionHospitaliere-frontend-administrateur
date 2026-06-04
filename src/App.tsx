@@ -11,6 +11,7 @@ import GestionChambres from './pages/GestionChambres/GestionChambres';
 import ProfilPage from './pages/ProfilPage/ProfilPage';
 import ConfidentialitePage from './pages/ConfidentialitePage/ConfidentialitePage';
 import NotificationsPage from './pages/NotificationsPage/NotificationsPage';
+import SecurityPage from './pages/SecurityPage/SecurityPage';
 
 const UserListPage = lazy(() => import('./pages/UserListPage/UserListPage'));
 
@@ -41,6 +42,7 @@ function App() {
               <Route path="profil"          element={<ProfilPage />}          />
               <Route path="confidentialite" element={<ConfidentialitePage />} />
               <Route path="notifications"   element={<NotificationsPage />}   />
+              <Route path="security"        element={<SecurityPage />}        />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />
