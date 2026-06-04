@@ -111,21 +111,6 @@ export default function SecurityPage() {
         </p>
       </div>
 
-      {/* Bandeau info */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '10px 14px', borderRadius: 8, marginBottom: 20,
-        background: 'var(--c-amber-bg)',
-        border: '1px solid var(--c-amber)',
-        color: 'var(--c-amber)', fontSize: 12,
-      }}>
-        <ShieldIcon />
-        <span>
-          Un compte est automatiquement verrouillé après <strong>5 tentatives échouées</strong>.
-          Seul l'administrateur peut le débloquer, en confirmant son identité avec son mot de passe.
-        </span>
-      </div>
-
       {/* Carte principale */}
       <div className="adm-card">
         <div className="adm-card-head" style={{ justifyContent: 'space-between' }}>
@@ -472,11 +457,3 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
-function ShieldIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-  );
-}
