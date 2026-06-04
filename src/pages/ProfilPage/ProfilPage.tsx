@@ -3,11 +3,14 @@ import './ProfilPage.css';
 import { useAuth } from '../../context/AuthContext';
 import client from '../../api/clients';
 
+import { useRef } from 'react';
+
 interface ProfilData {
   id: string;
   nom: string;
   prenom: string;
   email: string;
+  photoUrl?: string | null;
   role: string;
   pole: { id: string; nom: string } | null;
   service: { id: string; nom: string } | null;
@@ -39,6 +42,8 @@ export default function ProfilPage() {
   const [error, setError]       = useState<string | null>(null);
   const [success, setSuccess]   = useState<string | null>(null);
   const [form, setForm] = useState({ nom: '', prenom: '', email: '', telephone: '' });
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     client.get<ProfilData>('/auth/profil')
@@ -91,6 +96,28 @@ export default function ProfilPage() {
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(f => ({ ...f, [k]: e.target.value }));
 
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { setError('La photo ne doit pas dépasser 5 Mo.'); return; }
+    setUploading(true); setError(null);
+    try {
+      const fd = new FormData();
+      fd.append('fichier', file);
+      const res = await client.post<{ url: string }>('/auth/profil/photo', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setProfil(p => p ? { ...p, photoUrl: res.data.url } : p);
+      window.dispatchEvent(new CustomEvent('userPhotoUpdated', { detail: { url: res.data.url } }));
+      setSuccess('Photo de profil mise à jour.');
+    } catch (err: unknown) {
+      setError((err as Error).message ?? 'Erreur lors de l\'upload.');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
   const initiales = profil
     ? `${profil.prenom[0] ?? ''}${profil.nom[0] ?? ''}`.toUpperCase()
     : `${user?.prenom?.[0] ?? ''}${user?.nom?.[0] ?? ''}`.toUpperCase() || 'SA';
@@ -116,13 +143,36 @@ export default function ProfilPage() {
           {/* Carte identité */}
           <div className="adm-card">
             <div className="adm-card-body" style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{
-                width: 68, height: 68, borderRadius: 16, flexShrink: 0,
-                background: 'var(--c-accent)', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 22, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace',
-              }}>
-                {initiales}
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{
+                  width: 72, height: 72, borderRadius: 16, overflow: 'hidden',
+                  background: 'var(--c-accent)', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 22, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace',
+                }}>
+                  {profil.photoUrl
+                    ? <img src={profil.photoUrl} alt={initiales} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : initiales
+                  }
+                </div>
+                <button
+                  title="Changer la photo"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  style={{
+                    position: 'absolute', bottom: -4, right: -4,
+                    width: 24, height: 24, borderRadius: '50%',
+                    background: 'var(--c-accent)', border: '2px solid var(--c-surf)',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#fff', padding: 0,
+                  }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                </button>
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
               </div>
               <div style={{ flex: 1, minWidth: 160 }}>
                 <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--c-t0)', marginBottom: 4 }}>
