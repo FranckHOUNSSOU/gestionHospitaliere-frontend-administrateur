@@ -207,10 +207,23 @@ export function UserListPage() {
                   {/* Utilisateur */}
                   <td style={{ padding: '13px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {user.photoUrl ? (
+                        <img
+                          src={user.photoUrl}
+                          alt={`${user.prenom} ${user.nom}`}
+                          style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0, objectFit: 'cover' }}
+                          onError={e => {
+                            const t = e.currentTarget;
+                            t.style.display = 'none';
+                            (t.nextElementSibling as HTMLElement | null)?.style.setProperty('display', 'flex');
+                          }}
+                        />
+                      ) : null}
                       <div style={{
                         width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
                         background: av.bg, color: av.color,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        display: user.photoUrl ? 'none' : 'flex',
+                        alignItems: 'center', justifyContent: 'center',
                         fontSize: 12, fontWeight: 700,
                       }}>
                         {initials(user.prenom, user.nom)}
