@@ -30,6 +30,7 @@ export interface User {
     nom: string;
     prenom: string;
   };
+  photoUrl?: string | null;
 }
 
 export interface UserFilters {
