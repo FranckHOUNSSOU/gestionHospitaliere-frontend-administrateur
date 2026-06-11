@@ -244,7 +244,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
                     style={S.field}
                     value={form.numero}
                     maxLength={20}
-                    placeholder="ex : CH-101"
+                    placeholder=""
                     onChange={set('numero')}
                   />
                 </div>
@@ -262,7 +262,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
                     style={S.field}
                     value={form.designation}
                     maxLength={100}
-                    placeholder="ex : Chambre de soins intensifs"
+                    placeholder=""
                     onChange={set('designation')}
                   />
                 </div>
@@ -297,7 +297,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
                       min={1}
                       style={S.field}
                       value={form.capacite}
-                      placeholder="ex : 2"
+                      placeholder=""
                       onChange={set('capacite')}
                     />
                   </div>
@@ -323,7 +323,7 @@ const ChambreFormModal = ({ chambre, poles, onClose, onSaved }: ChambreFormModal
                     style={S.field}
                     value={form.etage}
                     maxLength={20}
-                    placeholder="ex : 2ème étage, RDC, Sous-sol"
+                    placeholder=""
                     onChange={set('etage')}
                   />
                 </div>
