@@ -293,7 +293,7 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
                       <polyline points="22,6 12,13 2,6"/>
                     </svg>
                     <Form.Control
-                      type="email" placeholder="exemple@hopital.bj"
+                      type="email" placeholder="Adresse e-mail"
                       value={form.email}
                       onChange={e => set('email', e.target.value)}
                       className="register-modal__input"
@@ -427,7 +427,7 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
                     </svg>
                     <Form.Control
                       type="text"
-                      placeholder="Ex : OM-00142 (médecins) ou MAT-0012"
+                      
                       value={form.numeroOrdre}
                       onChange={e => set('numeroOrdre', e.target.value)}
                       className="register-modal__input"
