@@ -158,6 +158,53 @@
   color: #b8c4d4 !important;
 }
 
+/* ── PHONE INPUT (react-international-phone) ── */
+.register-modal__phone-input {
+  height: 42px !important;
+  width: 100% !important;
+  border: 1.5px solid #dde3ed !important;
+  border-radius: 9px !important;
+  overflow: hidden !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  background-color: #ffffff !important;
+}
+
+.register-modal__phone-input:focus-within {
+  border-color: #1355a8 !important;
+  box-shadow: 0 0 0 3px rgba(19, 85, 168, 0.07) !important;
+}
+
+.register-modal__phone-input .react-international-phone-country-selector-button {
+  height: 100% !important;
+  border: none !important;
+  border-right: 1px solid #dde3ed !important;
+  border-radius: 0 !important;
+  margin-right: 0 !important;
+  background-color: #f8fafc !important;
+  padding: 0 10px !important;
+}
+
+.register-modal__phone-input .react-international-phone-country-selector-button:hover {
+  background-color: #f0f3f8 !important;
+}
+
+.register-modal__phone-input .react-international-phone-input {
+  height: 100% !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 12px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  color: #1a2336 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  outline: none !important;
+}
+
+.register-modal__phone-input .react-international-phone-input::placeholder {
+  color: #b8c4d4 !important;
+}
+
 /* ── SELECT ── */
 .register-modal__select {
   height: 42px !important;
