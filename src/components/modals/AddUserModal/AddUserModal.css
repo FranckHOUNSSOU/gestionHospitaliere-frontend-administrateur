@@ -164,7 +164,6 @@
   width: 100% !important;
   border: 1.5px solid #dde3ed !important;
   border-radius: 9px !important;
-  overflow: hidden !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
   background-color: #ffffff !important;
 }
@@ -178,7 +177,7 @@
   height: 100% !important;
   border: none !important;
   border-right: 1px solid #dde3ed !important;
-  border-radius: 0 !important;
+  border-radius: 7.5px 0 0 7.5px !important;
   margin-right: 0 !important;
   background-color: #f8fafc !important;
   padding: 0 10px !important;
