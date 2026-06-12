@@ -307,14 +307,12 @@ export default function AddUserModal({ show, onHide, onSuccess }: AddUserModalPr
                   <Form.Label className="register-modal__label">
                     Téléphone <span className="register-modal__optional">(optionnel)</span>
                   </Form.Label>
-                  <div className="register-modal__input-wrap">
-                    <PhoneInput
-                      defaultCountry="bj"
-                      value={form.telephone}
-                      onChange={(phone) => set('telephone', phone)}
-                      inputClassName="register-modal__input"
-                    />
-                  </div>
+                  <PhoneInput
+                    defaultCountry="bj"
+                    value={form.telephone}
+                    onChange={(phone) => set('telephone', phone)}
+                    className="register-modal__phone-input"
+                  />
                 </Form.Group>
               </Col>
             </Row>
